@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="엘리아스">
+<meta name="theme-color" content="#0E0C16">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics="">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&amp;family=Manrope:wght@400;500;600;700;800&amp;family=Noto+Sans+KR:wght@400;500;700;900&amp;display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;height:100%;background:#0E0C16;font-family:Manrope,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overscroll-behavior:none}
+*{-webkit-tap-highlight-color:transparent}
+body{touch-action:manipulation;-webkit-user-select:none;user-select:none}
+a{color:#C9F24A;text-decoration:none}a:hover{color:#E4FF8C}
+::-webkit-scrollbar{width:0}
+</style>
+</helmet>
+
+<div style="height:100dvh;background:#0E0C16;color:#F6EFE4;display:flex;flex-direction:column;overflow:hidden;position:relative;padding-top:env(safe-area-inset-top);box-sizing:border-box">
+
+<sc-if value="{{ isTopics }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;display:flex;flex-direction:column;padding:18px 0 0;overflow:hidden">
+<div style="padding:0 22px">
+<div onClick="{{ goHome }}" style="font-size:13px;font-weight:700;color:rgba(246,239,228,.5);cursor:pointer;padding:6px 0">← Назад</div>
+<div style="font-family:Unbounded,sans-serif;font-weight:800;font-size:26px;letter-spacing:-.025em;margin-top:6px">Темы раунда</div>
+<div style="font-size:13px;color:rgba(246,239,228,.48);margin-top:4px;font-weight:500">20 тем — от базовой лексики до TOPIK II</div>
+<div style="display:flex;gap:7px;margin-top:14px;overflow:hidden">
+<sc-for list="{{ levels }}" as="l" hint-placeholder-count="4">
+<div onClick="{{ l.pick }}" style="{{ l.style }}">{{ l.label }}</div>
+</sc-for>
+</div>
+</div>
+
+<div style="flex:1;overflow-y:auto;padding:14px 22px 0;margin-top:4px">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+<sc-for list="{{ topicCards }}" as="t" hint-placeholder-count="8">
+<div onClick="{{ t.toggle }}" style="{{ t.style }}">
+<div style="font-family:'Noto Sans KR',sans-serif;font-weight:900;font-size:15px;line-height:1.15;{{ t.koStyle }}">{{ t.ko }}</div>
+<div style="font-size:13.5px;font-weight:800;margin-top:7px;line-height:1.2">{{ t.ru }}</div>
+<div style="font-size:11px;font-weight:600;color:rgba(246,239,228,.4);margin-top:3px">{{ t.count }}</div>
+<div style="position:absolute;top:11px;right:12px;font-size:13px;font-weight:900;{{ t.markStyle }}">{{ t.mark }}</div>
+</div>
+</sc-for>
+</div>
+<div onClick="{{ toggleAdult }}" style="{{ adultStyle }}">
+<div style="flex:1"><div style="font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:900;color:#FF5C3E">연애와 성인 주제 · 18+</div><div style="font-size:12.5px;font-weight:700;margin-top:4px">Флирт и взрослые темы</div><div style="font-size:11px;font-weight:500;color:rgba(246,239,228,.42);margin-top:2px">включается по согласию компании</div></div>
+<div style="{{ adultToggleStyle }}"><div style="width:20px;height:20px;border-radius:100px;background:#12100A"></div></div>
+</div>
+<div style="height:14px"></div>
+</div>
+
+<div style="padding:12px 22px calc(env(safe-area-inset-bottom) + 20px);background:linear-gradient(to top,#0E0C16 60%,rgba(14,12,22,0))">
+<div onClick="{{ goTeams }}" style="{{ nextTopicsStyle }}">{{ nextTopicsLabel }}</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isTeams }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;display:flex;flex-direction:column;padding:18px 0 0;overflow:hidden">
+<div style="padding:0 22px">
+<div onClick="{{ goTopics }}" style="font-size:13px;font-weight:700;color:rgba(246,239,228,.5);cursor:pointer;padding:6px 0">← Темы</div>
+<div style="font-family:Unbounded,sans-serif;font-weight:800;font-size:26px;letter-spacing:-.025em;margin-top:6px">Команды</div>
+<div style="font-size:13px;color:rgba(246,239,228,.48);margin-top:4px;font-weight:500">Направление объяснения у каждой команды своё</div>
+</div>
+
+<div style="flex:1;overflow-y:auto;padding:14px 22px 0">
+<div style="display:flex;flex-direction:column;gap:9px">
+<sc-for list="{{ teamRows }}" as="tm" hint-placeholder-count="2">
+<div style="background:rgba(246,239,228,.05);border:1px solid rgba(246,239,228,.1);border-radius:18px;padding:13px 14px">
+<div style="display:flex;align-items:center;gap:11px">
+<div style="width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans KR',sans-serif;font-weight:900;font-size:13px;color:#12100A;{{ tm.badgeStyle }}">{{ tm.ko }}</div>
+<div style="flex:1;min-width:0"><div style="font-size:15px;font-weight:800">{{ tm.name }}</div><div style="font-size:11.5px;font-weight:600;color:rgba(246,239,228,.42)">{{ tm.playersLabel }}</div></div>
+<div onClick="{{ tm.minus }}" style="width:30px;height:30px;border-radius:10px;background:rgba(246,239,228,.09);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;cursor:pointer;color:rgba(246,239,228,.68)">−</div>
+<div onClick="{{ tm.plus }}" style="width:30px;height:30px;border-radius:10px;background:rgba(246,239,228,.09);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;cursor:pointer;color:rgba(246,239,228,.68)">+</div>
+<div onClick="{{ tm.remove }}" style="{{ tm.removeStyle }}">✕</div>
+</div>
+<div onClick="{{ tm.flip }}" style="margin-top:10px;display:flex;align-items:center;gap:8px;background:rgba(246,239,228,.05);border-radius:13px;padding:9px 11px;cursor:pointer">
+<div style="font-size:11.5px;font-weight:800;letter-spacing:.04em;color:rgba(246,239,228,.38)">ОБЪЯСНЯЕТ</div>
+<div style="font-family:'Noto Sans KR',sans-serif;font-size:13.5px;font-weight:800;{{ tm.dirStyle }}">{{ tm.dirLabel }}</div>
+<div style="margin-left:auto;font-size:11.5px;font-weight:700;color:rgba(246,239,228,.5)">сменить ⇄</div>
+</div>
+</div>
+</sc-for>
+<div style="display:flex;gap:8px">
+<div onClick="{{ addTeam }}" style="flex:1;border:1px dashed rgba(246,239,228,.2);border-radius:18px;padding:13px;text-align:center;font-size:13px;font-weight:700;color:rgba(246,239,228,.48);cursor:pointer">+ Добавить команду</div>
+<div onClick="{{ shuffleNames }}" style="flex:none;border:1px dashed rgba(246,239,228,.2);border-radius:18px;padding:13px 15px;text-align:center;font-size:13px;font-weight:700;color:rgba(246,239,228,.48);cursor:pointer">Другие имена ⟳</div>
+</div>
+</div>
+
+<div style="margin-top:20px;display:flex;align-items:baseline;justify-content:space-between"><div style="font-size:11.5px;font-weight:800;letter-spacing:.08em;color:rgba(246,239,228,.38)">ИГРАЕМ ДО</div><div style="font-size:11.5px;font-weight:600;color:rgba(246,239,228,.35)">кто первый — тот выиграл</div></div>
+<div style="display:flex;gap:8px;margin-top:9px">
+<sc-for list="{{ goalOpts }}" as="g" hint-placeholder-count="4">
+<div onClick="{{ g.pick }}" style="{{ g.style }}"><div style="font-family:Unbounded,sans-serif;font-weight:800;font-size:17px">{{ g.value }}</div><div style="font-size:10.5px;font-weight:700;opacity:.6;margin-top:2px">{{ g.sub }}</div></div>
+</sc-for>
+</div>
+
+<div style="margin-top:20px;font-size:11.5px;font-weight:800;letter-spacing:.08em;color:rgba(246,239,228,.38)">ВРЕМЯ НА РАУНД</div>
+<div style="display:flex;gap:8px;margin-top:9px">
+<sc-for list="{{ durationOpts }}" as="d" hint-placeholder-count="3">
+<div onClick="{{ d.pick }}" style="{{ d.style }}">{{ d.label }}</div>
+</sc-for>
+</div>
+
+<div style="margin-top:20px;font-size:11.5px;font-weight:800;letter-spacing:.08em;color:rgba(246,239,228,.38)">ПРАВИЛО ОБЪЯСНЕНИЯ</div>
+<div style="display:flex;flex-direction:column;gap:8px;margin-top:9px">
+<sc-for list="{{ ruleOpts }}" as="r" hint-placeholder-count="3">
+<div onClick="{{ r.pick }}" style="{{ r.style }}">
+<div style="flex:1"><div style="font-size:13.5px;font-weight:800">{{ r.title }}</div><div style="font-size:11.5px;font-weight:500;color:rgba(246,239,228,.42);margin-top:2px;line-height:1.35">{{ r.hint }}</div></div>
+<div style="{{ r.dotStyle }}"></div>
+</div>
+</sc-for>
+</div>
+<div style="height:16px"></div>
+</div>
+
+<div style="padding:12px 22px calc(env(safe-area-inset-bottom) + 20px);background:linear-gradient(to top,#0E0C16 60%,rgba(14,12,22,0))">
+<div onClick="{{ startRound }}" style="background:#C9F24A;color:#12100A;border-radius:20px;padding:17px;text-align:center;font-family:Unbounded,sans-serif;font-weight:800;font-size:16.5px;cursor:pointer" style-hover="background:#D8FF63">Старт · {{ activeTeamName }}</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isGame }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;display:flex;flex-direction:column;padding:14px 16px 0;overflow:hidden">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px">
+<div style="display:flex;align-items:center;gap:9px">
+<div style="width:29px;height:29px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans KR',sans-serif;font-weight:900;font-size:11.5px;color:#12100A;{{ activeBadgeStyle }}">{{ activeTeamKo }}</div>
+<div><div style="font-size:13.5px;font-weight:800;line-height:1.1">{{ activeTeamName }}</div><div style="font-size:11px;font-weight:600;color:rgba(246,239,228,.42)">{{ activeDirLabel }}</div></div>
+</div>
+<div style="display:flex;align-items:center;gap:12px">
+<div style="text-align:right"><div style="font-size:11px;font-weight:700;color:rgba(246,239,228,.4);line-height:1">раунд</div><div style="font-size:15px;font-weight:800;color:#C9F24A">+{{ roundScore }}</div></div>
+<div onClick="{{ togglePause }}" style="{{ pauseBtnStyle }}">{{ pauseGlyph }}</div>
+</div>
+</div>
+
+<div style="margin-top:14px;height:6px;border-radius:100px;background:rgba(246,239,228,.09);overflow:hidden"><div style="{{ timerBarStyle }}"></div></div>
+<div style="margin-top:9px;text-align:center;font-family:Unbounded,sans-serif;font-weight:800;font-size:15px;letter-spacing:.02em;{{ timerTextStyle }}">{{ timerText }}</div>
+
+<sc-if value="{{ timeUp }}" hint-placeholder-val="{{ false }}">
+<div style="margin-top:10px;display:flex;justify-content:center">
+<div style="background:rgba(255,92,62,.16);border:1px solid rgba(255,92,62,.4);border-radius:100px;padding:7px 14px;font-size:12.5px;font-weight:800;color:#FF8C74">⏱ последнее слово — потом смена хода</div>
+</div>
+</sc-if>
+
+<div onClick="{{ tapCard }}" style="flex:1;margin-top:12px;border-radius:26px;background:#F6EFE4;color:#12100A;padding:22px 20px;display:flex;flex-direction:column;cursor:pointer;position:relative;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.45)">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<div style="display:flex;align-items:center;gap:6px;background:rgba(18,16,10,.07);border-radius:100px;padding:5px 11px"><span style="font-family:'Noto Sans KR',sans-serif;font-size:11.5px;font-weight:800">{{ cardTopicKo }}</span><span style="font-size:11.5px;font-weight:700;opacity:.55">{{ cardTopicRu }}</span></div>
+<div style="display:flex;align-items:center;gap:4px">
+<sc-for list="{{ cardLevelDots }}" as="dot" hint-placeholder-count="3">
+<div style="{{ dot.style }}"></div>
+</sc-for>
+</div>
+</div>
+
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:8px;padding:8px 0">
+<div style="{{ cardMainStyle }}">{{ cardMain }}</div>
+<div style="font-size:14px;font-weight:700;letter-spacing:.06em;color:rgba(18,16,10,.42)">{{ cardRoman }}</div>
+<div style="width:38px;height:2px;background:rgba(18,16,10,.14);border-radius:2px;margin:2px 0"></div>
+<div style="{{ cardSubStyle }}">{{ cardSub }}</div>
+</div>
+
+<div style="{{ exampleStyle }}">
+<div style="font-size:10.5px;font-weight:800;letter-spacing:.09em;color:rgba(18,16,10,.4)">{{ exampleCaption }}</div>
+<div style="font-family:'Noto Sans KR',sans-serif;font-size:16.5px;font-weight:700;line-height:1.45;margin-top:6px;text-wrap:pretty">
+<sc-for list="{{ exKoParts }}" as="p" hint-placeholder-count="1"><span style="{{ p.style }}">{{ p.text }}</span></sc-for>
+</div>
+<div style="font-size:13.5px;font-weight:600;line-height:1.45;color:rgba(18,16,10,.55);margin-top:5px;text-wrap:pretty">
+<sc-for list="{{ exRuParts }}" as="p" hint-placeholder-count="1"><span style="{{ p.style }}">{{ p.text }}</span></sc-for>
+</div>
+<div style="{{ hiNoteStyle }}">загаданное слово произносить нельзя</div>
+</div>
+</div>
+
+<div style="display:flex;gap:10px;padding:14px 0 calc(env(safe-area-inset-bottom) + 18px)">
+<div onClick="{{ skipWord }}" style="flex:1;background:rgba(246,239,228,.08);border:1px solid rgba(246,239,228,.14);border-radius:19px;padding:16px;text-align:center;font-size:14.5px;font-weight:800;color:rgba(246,239,228,.72);cursor:pointer" style-hover="background:rgba(246,239,228,.14)">Пропустить</div>
+<div onClick="{{ correctWord }}" style="flex:1.5;background:#C9F24A;color:#12100A;border-radius:19px;padding:16px;text-align:center;font-family:Unbounded,sans-serif;font-weight:800;font-size:15.5px;cursor:pointer;box-shadow:0 10px 26px rgba(201,242,74,.22)" style-hover="background:#D8FF63">Угадали!</div>
+</div>
+</div>
+
+<sc-if value="{{ isPaused }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:60;background:rgba(11,9,18,.82);backdrop-filter:blur(14px);display:flex;flex-direction:column;justify-content:center;gap:11px;padding:24px;box-sizing:border-box">
+<div style="font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:900;color:#FFC24A">일시정지</div>
+<div style="font-family:Unbounded,sans-serif;font-weight:800;font-size:27px;letter-spacing:-.025em;margin-bottom:6px">Пауза</div>
+<div onClick="{{ resumeGame }}" style="background:#C9F24A;color:#12100A;border-radius:20px;padding:17px;text-align:center;font-family:Unbounded,sans-serif;font-weight:800;font-size:16px;cursor:pointer">Продолжить · {{ timerText }}</div>
+<div onClick="{{ endRound }}" style="background:rgba(246,239,228,.09);border:1px solid rgba(246,239,228,.16);border-radius:20px;padding:17px;text-align:center;font-size:14.5px;font-weight:800;color:rgba(246,239,228,.8);cursor:pointer">Завершить раунд · итоги</div>
+<div onClick="{{ exitGame }}" style="background:rgba(255,92,62,.1);border:1px solid rgba(255,92,62,.3);border-radius:20px;padding:17px;text-align:center;font-size:14.5px;font-weight:800;color:#FF8C74;cursor:pointer">Выйти в меню</div>
+<div style="font-size:12px;font-weight:600;color:rgba(246,239,228,.4);text-align:center;margin-top:2px">выход в меню обнуляет текущий раунд</div>
+</div>
+</sc-if>
+</sc-if>
+
+<sc-if value="{{ isRoundEnd }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;display:flex;flex-direction:column;padding:18px 0 0;overflow:hidden">
+<div style="padding:0 22px">
+<div style="font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:900;color:#C9F24A">시간 종료</div>
+<div style="font-family:Unbounded,sans-serif;font-weight:800;font-size:26px;letter-spacing:-.025em;margin-top:4px">Итоги раунда</div>
+<div style="display:flex;gap:9px;margin-top:14px">
+<div style="flex:1;background:rgba(201,242,74,.12);border:1px solid rgba(201,242,74,.28);border-radius:17px;padding:13px 14px"><div style="font-family:Unbounded,sans-serif;font-size:24px;font-weight:800;color:#C9F24A">+{{ roundScore }}</div><div style="font-size:11.5px;font-weight:700;color:rgba(246,239,228,.5);margin-top:2px">баллов</div></div>
+<div style="flex:1;background:rgba(108,140,255,.12);border:1px solid rgba(108,140,255,.28);border-radius:17px;padding:13px 14px"><div style="font-family:Unbounded,sans-serif;font-size:24px;font-weight:800;color:#6C8CFF">{{ newWordsCount }}</div><div style="font-size:11.5px;font-weight:700;color:rgba(246,239,228,.5);margin-top:2px">в словарь</div></div>
+</div>
+<div style="font-size:11.5px;font-weight:600;color:rgba(246,239,228,.42);margin-top:12px">Тапни слово, если засчитали неправильно</div>
+</div>
+
+<sc-if value="{{ hasStoryCards }}" hint-placeholder-val="{{ false }}">
+<div style="margin-top:16px">
+<div style="font-size:11.5px;font-weight:800;letter-spacing:.08em;color:rgba(246,239,228,.38);padding:0 22px">ПОИСК В ВИДЕО</div>
+<div onScroll="{{ onStoriesScroll }}" style="display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;margin-top:9px">
+<sc-for list="{{ storyCards }}" as="c" hint-placeholder-count="2">
+<div style="flex:none;width:100%;scroll-snap-align:start;box-sizing:border-box;padding:0 22px">
+<a href="{{ c.link }}" target="_blank" rel="noopener" style="display:block;text-decoration:none;color:inherit;background:linear-gradient(150deg,rgba(108,140,255,.16),rgba(201,242,74,.08));border:1px solid rgba(108,140,255,.3);border-radius:20px;padding:18px 19px">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<div style="font-size:10.5px;font-weight:800;letter-spacing:.08em;color:rgba(246,239,228,.42)">ПОИСК СЛОВА В ВИДЕО</div>
+<div style="font-size:17px;color:#9FB4FF">↗</div>
+</div>
+<div style="font-family:'Noto Sans KR',sans-serif;font-size:30px;font-weight:900;margin-top:8px">{{ c.ko }}</div>
+<div style="font-size:14px;font-weight:700;color:rgba(246,239,228,.6);margin-top:3px">{{ c.ru }}</div>
+<div style="font-size:12px;font-weight:700;color:#9FB4FF;margin-top:10px">Искать на YouGlish — результат зависит от слова</div>
+</a>
+</div>
+</sc-for>
+</div>
+<div style="display:flex;gap:5px;justify-content:center;margin-top:9px">
+<sc-for list="{{ storyDots }}" as="d" hint-placeholder-count="2">
+<div style="{{ d.style }}"></div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<div style="flex:1;overflow-y:auto;padding:12px 22px 0;margin-top:2px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<sc-for list="{{ resultRows }}" as="w" hint-placeholder-count="5">
+<div onClick="{{ w.toggle }}" style="{{ w.style }}">
+<div style="flex:1;min-width:0">
+<div style="font-family:'Noto Sans KR',sans-serif;font-size:19px;font-weight:900;line-height:1.15">{{ w.ko }}</div>
+<div style="font-size:13px;font-weight:700;color:rgba(246,239,228,.62);margin-top:2px">{{ w.ru }}</div>
+<div style="font-size:11px;font-weight:600;color:rgba(246,239,228,.34);margin-top:3px">{{ w.roman }} · {{ w.topicRu }}</div>
+</div>
+<div style="font-size:17px;font-weight:900;{{ w.markStyle }}">{{ w.mark }}</div>
+</div>
+</sc-for>
+<div style="height:12px"></div>
+</div>
+</div>
+
+<div style="padding:12px 22px calc(env(safe-area-inset-bottom) + 20px);display:flex;gap:9px;background:linear-gradient(to top,#0E0C16 60%,rgba(14,12,22,0))">
+<div onClick="{{ goScore }}" style="flex:1;background:rgba(246,239,228,.08);border-radius:19px;padding:16px;text-align:center;font-size:14px;font-weight:800;color:rgba(246,239,228,.75);cursor:pointer">Счёт</div>
+<div onClick="{{ nextTeam }}" style="flex:1.4;background:#C9F24A;color:#12100A;border-radius:19px;padding:16px;text-align:center;font-family:Unbounded,sans-serif;font-weight:800;font-size:15px;cursor:pointer">{{ nextTeamLabel }}</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isScore }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;display:flex;flex-direction:column;padding:18px 22px 0;overflow-y:auto;-webkit-overflow-scrolling:touch">
+<div style="font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:900;color:#FFC24A">{{ scoreKicker }}</div>
+<div style="font-family:Unbounded,sans-serif;font-weight:800;font-size:26px;letter-spacing:-.025em;margin-top:4px">{{ scoreTitle }}</div>
+<div style="font-size:13px;color:rgba(246,239,228,.48);margin-top:4px;font-weight:500">Круг {{ roundNo }} · играем до {{ goal }} очков · {{ totalWordsPlayed }} слов сыграно</div>
+
+<div style="display:flex;flex-direction:column;gap:9px;margin-top:18px">
+<sc-for list="{{ scoreRows }}" as="s" hint-placeholder-count="2">
+<div style="{{ s.style }}">
+<div style="font-family:Unbounded,sans-serif;font-size:15px;font-weight:800;width:22px;color:rgba(246,239,228,.35)">{{ s.place }}</div>
+<div style="width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans KR',sans-serif;font-weight:900;font-size:13px;color:#12100A;{{ s.badgeStyle }}">{{ s.ko }}</div>
+<div style="flex:1;min-width:0"><div style="font-size:15px;font-weight:800">{{ s.name }}</div><div style="font-size:11.5px;font-weight:600;color:rgba(246,239,228,.42)">{{ s.detail }}</div></div>
+<div style="font-family:Unbounded,sans-serif;font-size:23px;font-weight:800;{{ s.scoreStyle }}">{{ s.score }}</div>
+</div>
+</sc-for>
+</div>
+
+<div style="margin-top:20px;background:rgba(246,239,228,.05);border-radius:20px;padding:16px">
+<div style="font-size:11.5px;font-weight:800;letter-spacing:.08em;color:rgba(246,239,228,.38)">СЛОВО НА ПОВТОР</div>
+<div style="display:flex;align-items:flex-end;gap:10px;margin-top:8px">
+<div style="font-family:'Noto Sans KR',sans-serif;font-size:34px;font-weight:900;line-height:1;flex:none;white-space:nowrap">{{ mvpWordKo }}</div>
+<div style="font-size:14px;font-weight:700;color:rgba(246,239,228,.55);padding-bottom:4px">{{ mvpWordRu }}</div>
+</div>
+<div style="font-size:12px;font-weight:600;color:rgba(246,239,228,.4);margin-top:6px">чаще всего не угадывали — ждёт повтора</div>
+</div>
+
+<div style="margin-top:auto;margin-bottom:calc(env(safe-area-inset-bottom) + 18px);display:flex;gap:9px">
+<div onClick="{{ goHome }}" style="flex:1;background:rgba(246,239,228,.08);border-radius:19px;padding:16px;text-align:center;font-size:14px;font-weight:800;color:rgba(246,239,228,.75);cursor:pointer">Закончить</div>
+<div onClick="{{ nextTeam }}" style="flex:1.4;background:#C9F24A;color:#12100A;border-radius:19px;padding:16px;text-align:center;font-family:Unbounded,sans-serif;font-weight:800;font-size:15px;cursor:pointer">{{ nextTeamLabel }}</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isSolo }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;display:flex;flex-direction:column;padding:14px 20px 0;overflow-y:auto;-webkit-overflow-scrolling:touch">
+<div style="display:flex;align-items:center;gap:12px">
+<div onClick="{{ goHome }}" style="font-size:13px;font-weight:700;color:rgba(246,239,228,.5);cursor:pointer">←</div>
+<div style="flex:1;display:flex;gap:4px">
+<sc-for list="{{ quizDots }}" as="d" hint-placeholder-count="10">
+<div style="{{ d.style }}"></div>
+</sc-for>
+</div>
+<div style="{{ quizStreakStyle }}"><span style="font-size:12px;font-weight:800;color:#FF5C3E">{{ quizStreak }} подряд</span></div>
+</div>
+
+<div style="margin-top:18px;font-size:11px;font-weight:800;letter-spacing:.09em;color:rgba(246,239,228,.38)">{{ quizPrompt }}</div>
+<div style="margin-top:10px;{{ quizWordStyle }}">{{ quizWord }}</div>
+<div style="margin-top:6px;font-size:13px;font-weight:700;letter-spacing:.05em;color:rgba(246,239,228,.35)">{{ quizRoman }}</div>
+
+<div style="display:flex;flex-direction:column;gap:9px;margin-top:20px">
+<sc-for list="{{ quizOptions }}" as="o" hint-placeholder-count="4">
+<div onClick="{{ o.pick }}" style="{{ o.style }}"><div style="flex:1;{{ o.textStyle }}">{{ o.label }}</div><div style="font-size:15px;font-weight:900;{{ o.markStyle }}">{{ o.mark }}</div></div>
+</sc-for>
+</div>
+
+<div style="{{ quizExStyle }}">
+<div style="font-size:10.5px;font-weight:800;letter-spacing:.09em;color:rgba(246,239,228,.38)">ПРИМЕР</div>
+<div style="font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:700;line-height:1.45;margin-top:6px">
+<sc-for list="{{ quizExKoParts }}" as="p" hint-placeholder-count="1"><span style="{{ p.style }}">{{ p.text }}</span></sc-for>
+</div>
+<div style="font-size:13px;font-weight:600;line-height:1.45;color:rgba(246,239,228,.5);margin-top:4px">{{ quizExRu }}</div>
+</div>
+
+<div style="{{ quizVideoStyle }}">
+<div style="font-size:10.5px;font-weight:800;letter-spacing:.09em;color:rgba(246,239,228,.38)">ПОИСК В ВИДЕО</div>
+<a href="{{ quizVideoLink }}" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px;background:rgba(108,140,255,.12);border:1px solid rgba(108,140,255,.3);border-radius:15px;padding:13px 15px;text-decoration:none;color:inherit">
+<div><div style="font-family:'Noto Sans KR',sans-serif;font-size:16px;font-weight:900">{{ quizVideoWord }}</div><div style="font-size:12px;font-weight:600;color:rgba(246,239,228,.5);margin-top:2px">искать это слово на YouGlish — не для всех слов есть совпадения</div></div>
+<div style="font-size:18px;color:#9FB4FF">↗</div>
+</a>
+</div>
+
+<div style="margin-top:auto;padding-bottom:calc(env(safe-area-inset-bottom) + 18px)">
+<div onClick="{{ quizNext }}" style="{{ quizNextStyle }}">{{ quizNextLabel }}</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isSoloDone }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;display:flex;flex-direction:column;padding:20px 22px 0;overflow-y:auto;-webkit-overflow-scrolling:touch">
+<div style="font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:900;color:#C9F24A">퀴즈 완료</div>
+<div style="font-family:Unbounded,sans-serif;font-weight:800;font-size:27px;letter-spacing:-.025em;margin-top:4px">{{ quizResultTitle }}</div>
+<div style="display:flex;gap:9px;margin-top:16px">
+<div style="flex:1;background:rgba(201,242,74,.12);border:1px solid rgba(201,242,74,.28);border-radius:18px;padding:15px"><div style="font-family:Unbounded,sans-serif;font-size:26px;font-weight:800;color:#C9F24A">{{ quizScore }}</div><div style="font-size:11.5px;font-weight:700;color:rgba(246,239,228,.5);margin-top:3px">из 10 верно</div></div>
+<div style="flex:1;background:rgba(108,140,255,.12);border:1px solid rgba(108,140,255,.28);border-radius:18px;padding:15px"><div style="font-family:Unbounded,sans-serif;font-size:26px;font-weight:800;color:#6C8CFF">+{{ quizXp }}</div><div style="font-size:11.5px;font-weight:700;color:rgba(246,239,228,.5);margin-top:3px">опыта</div></div>
+</div>
+<div style="margin-top:20px;font-size:11.5px;font-weight:800;letter-spacing:.08em;color:rgba(246,239,228,.38)">ОШИБКИ УХОДЯТ В ПОВТОР</div>
+<div style="display:flex;flex-direction:column;gap:8px;margin-top:10px;overflow-y:auto">
+<sc-for list="{{ quizMistakes }}" as="m" hint-placeholder-count="3">
+<div style="display:flex;align-items:center;gap:12px;background:rgba(255,92,62,.07);border:1px solid rgba(255,92,62,.22);border-radius:16px;padding:12px 14px">
+<div style="font-family:'Noto Sans KR',sans-serif;font-size:19px;font-weight:900;flex:none;white-space:nowrap">{{ m.ko }}</div>
+<div style="font-size:13px;font-weight:700;color:rgba(246,239,228,.6);text-align:right;flex:1">{{ m.ru }}</div>
+</div>
+</sc-for>
+</div>
+<div style="margin-top:auto;padding-bottom:calc(env(safe-area-inset-bottom) + 18px);display:flex;gap:9px">
+<div onClick="{{ goHome }}" style="flex:1;background:rgba(246,239,228,.08);border-radius:19px;padding:16px;text-align:center;font-size:14px;font-weight:800;color:rgba(246,239,228,.75);cursor:pointer">На главную</div>
+<div onClick="{{ goSolo }}" style="flex:1.4;background:#C9F24A;color:#12100A;border-radius:19px;padding:16px;text-align:center;font-family:Unbounded,sans-serif;font-weight:800;font-size:15px;cursor:pointer">Ещё 10 слов</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isRepeat }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;display:flex;flex-direction:column;padding:18px 20px 0;overflow:hidden">
+<div style="display:flex;align-items:center;gap:12px">
+<div onClick="{{ exitRepeat }}" style="font-size:13px;font-weight:700;color:rgba(246,239,228,.5);cursor:pointer">← Словарь</div>
+<div style="margin-left:auto;font-size:12px;font-weight:700;color:rgba(246,239,228,.4)">осталось {{ repeatLeft }} · закрыто {{ repeatCleared }}</div>
+</div>
+
+<div onClick="{{ flipRepeat }}" style="flex:1;margin-top:14px;border-radius:26px;background:#F6EFE4;color:#12100A;padding:26px 22px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:8px;cursor:pointer;box-shadow:0 20px 50px rgba(0,0,0,.4);overflow-y:auto">
+<div style="{{ repeatFrontStyle }}">{{ repeatFront }}</div>
+<div style="font-size:14px;font-weight:700;letter-spacing:.05em;color:rgba(18,16,10,.42)">{{ repeatFrontRoman }}</div>
+<sc-if value="{{ repeatFlipped }}" hint-placeholder-val="{{ false }}">
+<div style="width:38px;height:2px;background:rgba(18,16,10,.14);border-radius:2px;margin:6px 0"></div>
+<div style="font-size:22px;font-weight:800">{{ repeatBack }}</div>
+<div style="margin-top:14px;background:rgba(18,16,10,.05);border-radius:16px;padding:12px 14px;text-align:left;width:100%;box-sizing:border-box">
+<div style="font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:700;line-height:1.4">{{ repeatExKo }}</div>
+<div style="font-size:13px;font-weight:600;color:rgba(18,16,10,.55);margin-top:4px;line-height:1.4">{{ repeatExRu }}</div>
+</div>
+</sc-if>
+<div style="{{ repeatHintStyle }}">тапни, чтобы перевернуть</div>
+</div>
+
+<div style="{{ repeatBtnRowStyle }}">
+<div onClick="{{ repeatForgot }}" style="flex:1;background:rgba(255,92,62,.12);border:1px solid rgba(255,92,62,.32);border-radius:19px;padding:16px;text-align:center;font-size:14.5px;font-weight:800;color:#FF8C74;cursor:pointer">Не вспомнил</div>
+<div onClick="{{ repeatRemembered }}" style="flex:1.3;background:#C9F24A;color:#12100A;border-radius:19px;padding:16px;text-align:center;font-family:Unbounded,sans-serif;font-weight:800;font-size:15.5px;cursor:pointer">Вспомнил</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isRepeatDone }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;display:flex;flex-direction:column;padding:22px;align-items:center;justify-content:center;text-align:center;gap:12px">
+<div style="font-family:'Noto Sans KR',sans-serif;font-size:16px;font-weight:900;color:#C9F24A">복습 완료</div>
+<div style="font-family:Unbounded,sans-serif;font-weight:800;font-size:26px;letter-spacing:-.02em">Повтор пройден</div>
+<div style="font-size:14px;font-weight:600;color:rgba(246,239,228,.5)">закрыто {{ repeatCleared }} слов в этой сессии</div>
+<div onClick="{{ goHome }}" style="margin-top:8px;background:#C9F24A;color:#12100A;border-radius:19px;padding:16px 28px;font-family:Unbounded,sans-serif;font-weight:800;font-size:15px;cursor:pointer">На главную</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isDict }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;display:flex;flex-direction:column;padding:18px 0 0;overflow:hidden">
+<div style="padding:0 22px">
+<div style="font-family:Unbounded,sans-serif;font-weight:800;font-size:26px;letter-spacing:-.025em">Мой словарь</div>
+<div style="font-size:13px;color:rgba(246,239,228,.48);margin-top:4px;font-weight:500">{{ dictCount }} из игр · {{ repeatLabel }}</div>
+<div style="display:flex;gap:7px;margin-top:14px">
+<sc-for list="{{ dictFilters }}" as="f" hint-placeholder-count="3">
+<div onClick="{{ f.pick }}" style="{{ f.style }}">{{ f.label }}</div>
+</sc-for>
+</div>
+</div>
+<div style="flex:1;overflow-y:auto;padding:14px 22px 0">
+<sc-if value="{{ dictEmpty }}" hint-placeholder-val="{{ false }}">
+<div style="border:1px dashed rgba(246,239,228,.16);border-radius:20px;padding:22px 20px;text-align:center">
+<div style="font-family:'Noto Sans KR',sans-serif;font-size:22px;font-weight:900;color:rgba(246,239,228,.5)">아직 비어 있어요</div>
+<div style="font-size:13px;font-weight:600;color:rgba(246,239,228,.42);margin-top:8px;line-height:1.45;text-wrap:pretty">{{ dictEmptyHint }}</div>
+</div>
+</sc-if>
+<div style="display:flex;flex-direction:column;gap:8px">
+<sc-for list="{{ dictRows }}" as="w" hint-placeholder-count="6">
+<div onClick="{{ w.expand }}" style="background:rgba(246,239,228,.05);border:1px solid rgba(246,239,228,.09);border-radius:18px;padding:14px 15px;cursor:pointer">
+<div style="display:flex;align-items:center;gap:12px">
+<div style="flex:1;min-width:0">
+<div style="font-family:'Noto Sans KR',sans-serif;font-size:20px;font-weight:900;line-height:1.1">{{ w.ko }}</div>
+<div style="font-size:13px;font-weight:700;color:rgba(246,239,228,.6);margin-top:3px">{{ w.ru }}</div>
+</div>
+<div style="text-align:right"><div style="font-size:10.5px;font-weight:700;color:rgba(246,239,228,.35)">{{ w.topicRu }}</div><div style="display:flex;gap:3px;margin-top:5px;justify-content:flex-end"><sc-for list="{{ w.dots }}" as="d" hint-placeholder-count="3"><div style="{{ d.style }}"></div></sc-for></div></div>
+</div>
+<div style="{{ w.exStyle }}">
+<div style="font-family:'Noto Sans KR',sans-serif;font-size:14.5px;font-weight:700;line-height:1.4">{{ w.exKo }}</div>
+<div style="font-size:12.5px;font-weight:600;color:rgba(246,239,228,.45);margin-top:4px;line-height:1.4">{{ w.exRu }}</div>
+</div>
+</div>
+</sc-for>
+<div style="height:12px"></div>
+</div>
+</div>
+<div style="padding:10px 22px calc(env(safe-area-inset-bottom) + 86px)"><div onClick="{{ goRepeat }}" style="{{ repeatDictBtnStyle }}">복습 · Повторить {{ repeatWords }}</div></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isProfile }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;display:flex;flex-direction:column;padding:18px 0 0;overflow:hidden">
+<div style="padding:0 22px">
+<div style="display:flex;align-items:center;gap:13px">
+<div style="width:56px;height:56px;border-radius:18px;background:#C9F24A;color:#12100A;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans KR',sans-serif;font-size:24px;font-weight:900">아</div>
+<div><div style="font-family:Unbounded,sans-serif;font-weight:800;font-size:20px;letter-spacing:-.02em">Аня</div><div style="font-size:12.5px;font-weight:600;color:rgba(246,239,228,.45);margin-top:2px">уровень 초급 · 3-я неделя</div></div>
+</div>
+<div style="display:flex;gap:8px;margin-top:16px">
+<sc-for list="{{ statCards }}" as="s" hint-placeholder-count="3">
+<div style="flex:1;background:rgba(246,239,228,.05);border-radius:17px;padding:13px 12px"><div style="font-family:Unbounded,sans-serif;font-size:21px;font-weight:800;{{ s.valStyle }}">{{ s.value }}</div><div style="font-size:11px;font-weight:700;color:rgba(246,239,228,.45);margin-top:3px;line-height:1.25">{{ s.label }}</div></div>
+</sc-for>
+</div>
+</div>
+<div style="flex:1;overflow-y:auto;padding:18px 22px 96px">
+<div style="font-size:11.5px;font-weight:800;letter-spacing:.08em;color:rgba(246,239,228,.38)">ПРОГРЕСС ПО ТЕМАМ</div>
+<sc-if value="{{ progressEmpty }}" hint-placeholder-val="{{ false }}">
+<div style="font-size:13px;font-weight:600;color:rgba(246,239,228,.4);margin-top:10px;line-height:1.45;text-wrap:pretty">Пока нечего показать — прогресс появится после первого раунда или квиза.</div>
+</sc-if>
+<div style="display:flex;flex-direction:column;gap:11px;margin-top:12px">
+<sc-for list="{{ progressRows }}" as="p" hint-placeholder-count="6">
+<div>
+<div style="display:flex;align-items:baseline;gap:8px"><div style="font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:800">{{ p.ko }}</div><div style="font-size:12.5px;font-weight:700;color:rgba(246,239,228,.55)">{{ p.ru }}</div><div style="margin-left:auto;font-size:11.5px;font-weight:700;color:rgba(246,239,228,.4)">{{ p.label }}</div></div>
+<div style="height:7px;border-radius:100px;background:rgba(246,239,228,.08);margin-top:6px;overflow:hidden"><div style="{{ p.barStyle }}"></div></div>
+</div>
+</sc-for>
+</div>
+<div style="height:16px"></div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ showTabs }}" hint-placeholder-val="{{ true }}">
+<div style="position:absolute;bottom:0;left:0;right:0;height:78px;box-sizing:content-box;padding-bottom:env(safe-area-inset-bottom);background:linear-gradient(to top,#0E0C16 62%,rgba(14,12,22,.9) 84%,rgba(14,12,22,0));display:flex;align-items:flex-start;justify-content:center;gap:6px;padding-top:8px;z-index:40">
+<sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3">
+<div onClick="{{ t.pick }}" style="{{ t.style }}"><div style="font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:900">{{ t.ko }}</div><div style="font-size:10.5px;font-weight:700;margin-top:2px">{{ t.label }}</div></div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+<div style="flex:1;display:flex;flex-direction:column;padding:20px 24px 0;overflow-y:auto;-webkit-overflow-scrolling:touch">
+<div style="display:flex;gap:8px;align-items:center">
+<div style="display:flex;align-items:center;gap:7px;background:rgba(201,242,74,.14);border:1px solid rgba(201,242,74,.3);border-radius:100px;padding:7px 13px"><span style="width:7px;height:7px;border-radius:100px;background:#C9F24A"></span><span style="font-size:12.5px;font-weight:700;color:#C9F24A">{{ streakLabel }}</span></div>
+<div style="background:rgba(246,239,228,.08);border-radius:100px;padding:7px 13px;font-size:12.5px;font-weight:600;color:rgba(246,239,228,.62)">{{ learnedCount }}</div>
+</div>
+
+<div style="margin-top:26px;font-family:'Noto Sans KR',sans-serif;font-weight:900;font-size:62px;line-height:.92;letter-spacing:-.035em">엘리아스</div>
+<div style="margin-top:12px;display:flex;align-items:center;gap:9px;font-size:14px;font-weight:700;color:rgba(246,239,228,.62)">
+<span style="color:#C9F24A">РУ</span><span style="width:26px;height:1.5px;background:rgba(246,239,228,.3)"></span><span style="color:#FF5C3E">한국어</span>
+<span style="font-weight:500;color:rgba(246,239,228,.42)">объясняем в обе стороны</span>
+</div>
+
+<div style="margin-top:20px;border-radius:24px;background:linear-gradient(150deg,rgba(201,242,74,.13),rgba(108,140,255,.1));border:1px solid rgba(246,239,228,.1);padding:18px 19px">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<div style="font-size:10.5px;font-weight:800;letter-spacing:.1em;color:rgba(246,239,228,.42)">СЛОВО ЧАСА</div>
+<div style="font-size:11px;font-weight:700;color:rgba(246,239,228,.35)">{{ wotdMeta }}</div>
+</div>
+<div style="font-family:'Noto Sans KR',sans-serif;font-size:40px;font-weight:900;line-height:1.05;margin-top:10px">{{ wotdKo }}</div>
+<div style="font-size:14.5px;font-weight:700;color:rgba(246,239,228,.62);margin-top:4px">{{ wotdRu }}</div>
+<div style="font-family:'Noto Sans KR',sans-serif;font-size:13.5px;font-weight:600;color:rgba(246,239,228,.42);margin-top:9px;line-height:1.4">{{ wotdEx }}</div>
+<div style="font-size:12.5px;font-weight:600;color:rgba(246,239,228,.3);margin-top:4px;line-height:1.4">{{ wotdExRu }}</div>
+</div>
+<div style="display:flex;gap:9px;margin-top:12px">
+<sc-for list="{{ homeStats }}" as="h" hint-placeholder-count="3">
+<div style="flex:1;background:rgba(246,239,228,.05);border-radius:16px;padding:12px 13px"><div style="font-family:Unbounded,sans-serif;font-size:19px;font-weight:800;{{ h.valStyle }}">{{ h.value }}</div><div style="font-size:10.5px;font-weight:700;color:rgba(246,239,228,.42);margin-top:3px;line-height:1.25">{{ h.label }}</div></div>
+</sc-for>
+</div>
+<div onClick="{{ goTopics }}" style="background:#C9F24A;color:#12100A;border-radius:22px;padding:19px 22px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;box-shadow:0 14px 34px rgba(201,242,74,.2)" style-hover="background:#D8FF63">
+<div><div style="font-family:Unbounded,sans-serif;font-weight:800;font-size:19px;letter-spacing:-.02em">Играть в компании</div><div style="font-size:12.5px;font-weight:600;opacity:.6;margin-top:3px">команды · таймер · карточки</div></div>
+<div style="font-size:24px;font-weight:900">→</div>
+</div><div style="display:flex;flex-direction:column;gap:10px;padding-bottom:96px;padding-top:12px">
+
+<div style="display:flex;gap:10px">
+<div onClick="{{ goSolo }}" style="flex:1;background:rgba(255,92,62,.13);border:1px solid rgba(255,92,62,.32);border-radius:20px;padding:16px 17px;cursor:pointer" style-hover="background:rgba(255,92,62,.2)">
+<div style="font-family:'Noto Sans KR',sans-serif;font-size:21px;font-weight:900;color:#FF5C3E">혼자</div>
+<div style="font-size:13.5px;font-weight:700;margin-top:5px">Соло-квиз</div><div style="font-size:11px;font-weight:600;color:rgba(246,239,228,.4);margin-top:2px">10 слов · выбор ответа</div>
+</div>
+<div onClick="{{ goRepeat }}" style="flex:1;background:rgba(108,140,255,.14);border:1px solid rgba(108,140,255,.32);border-radius:20px;padding:16px 17px;cursor:{{ repeatCursor }}" style-hover="background:rgba(108,140,255,.21)">
+<div style="font-family:'Noto Sans KR',sans-serif;font-size:21px;font-weight:900;color:#6C8CFF">복습</div>
+<div style="font-size:13.5px;font-weight:700;margin-top:5px">Повтор · {{ repeatCount }}</div>
+</div>
+</div>
+</div>
+</div>
+</sc-if>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:402,&quot;height&quot;:874},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#C9F24A&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#C9F24A&quot;,&quot;#FF5C3E&quot;,&quot;#6C8CFF&quot;,&quot;#FFC24A&quot;],&quot;section&quot;:&quot;Стиль&quot;}}">
+const TOPICS = [
+  {id:'life',ko:'일상생활',ru:'Повседневная жизнь',count:116},
+  {id:'people',ko:'사람과 관계',ru:'Люди и отношения',count:108},
+  {id:'study',ko:'학교와 공부',ru:'Учёба и университет',count:92},
+  {id:'work',ko:'직장과 비즈니스',ru:'Работа и бизнес',count:100},
+  {id:'food',ko:'음식과 식당',ru:'Еда и рестораны',count:124},
+  {id:'travel',ko:'여행',ru:'Путешествия',count:96},
+  {id:'city',ko:'도시와 교통',ru:'Город и транспорт',count:88},
+  {id:'money',ko:'쇼핑과 돈',ru:'Покупки и деньги',count:64},
+  {id:'body',ko:'몸과 건강',ru:'Тело, здоровье, спорт',count:82},
+  {id:'emotion',ko:'감정과 성격',ru:'Эмоции и характер',count:90},
+  {id:'abstract',ko:'생각과 추상적 개념',ru:'Мысли и абстракции',count:58},
+  {id:'internet',ko:'인터넷과 현대생활',ru:'Интернет и digital',count:70},
+  {id:'korea',ko:'한국과 한국 문화',ru:'Корея и культура',count:86},
+  {id:'slang',ko:'구어체와 신조어',ru:'Разговорный и сленг',count:74},
+  {id:'awkward',ko:'재미있고 당황스러운\n상황',ru:'Смешные ситуации',count:52},
+  {id:'fun',ko:'엔터테인먼트와 \n대중문화',ru:'Развлечения и поп-культура',count:78},
+  {id:'hardcore',ko:'고급 단어',ru:'Хардкор',count:46},
+  {id:'topik1',ko:'토픽 1급·2급',ru:'TOPIK I · база экзамена',count:0},
+  {id:'topik2',ko:'토픽 3급~6급',ru:'TOPIK II · включая 쓰기',count:0},
+];
+const ADULT = {id:'adult',ko:'연애와 성인 주제',ru:'Флирт и 18+',count:44};
+
+const W = (ko,roman,ru,topic,lvl,exKo,exRu,hiKo,hiRu)=>({ko,roman,ru,topic,lvl,exKo,exRu,hiKo:hiKo||ko,hiRu:hiRu||''});
+const WORDS = [
+  W('청소기','cheongsogi','пылесос','life',1,'주말마다 청소기를 돌려요.','По выходным пылесошу.','청소기','пылесошу'),
+  W('이불','ibul','одеяло','life',1,'추워서 이불을 하나 더 덮었어요.','Замёрз и накрылся ещё одним одеялом.','이불','одеялом'),
+  W('설거지','seolgeoji','мытьё посуды','life',2,'밥 먹고 설거지는 제가 할게요.','После еды посуду помою я.','설거지','посуду'),
+  W('알람','allam','будильник','life',1,'알람을 못 듣고 늦잠 잤어요.','Не услышал будильник и проспал.','알람','будильник'),
+  W('눈치','nunchi','чуткость к обстановке','people',3,'그 사람은 눈치가 빨라서 말 안 해도 알아요.','Он очень чуткий — понимает без слов.','눈치','чуткий'),
+  W('친척','chincheok','родственники','people',1,'명절에 친척들이 다 모여요.','На праздник собираются все родственники.','친척','родственники'),
+  W('동갑','donggap','ровесник','people',2,'우리는 동갑이라서 말을 놓았어요.','Мы ровесники, поэтому перешли на «ты».','동갑','ровесники'),
+  W('소개팅','sogaeting','свидание вслепую','people',2,'친구가 소개팅을 주선해 줬어요.','Друг устроил мне свидание вслепую.','소개팅','свидание вслепую'),
+  W('시험','siheom','экзамен','study',1,'내일 한국어 시험이 있어요.','Завтра у меня экзамен по корейскому.','시험','экзамен'),
+  W('과제','gwaje','домашнее задание','study',1,'과제를 아직 반도 못 했어요.','Я и половины задания не сделал.','과제','задания'),
+  W('장학금','janghakgeum','стипендия','study',2,'성적이 좋아서 장학금을 받았어요.','За хорошие оценки получил стипендию.','장학금','стипендию'),
+  W('벼락치기','byeorakchigi','зубрёжка в последнюю ночь','study',3,'벼락치기로 시험을 봤어요.','Сдавал экзамен после ночной зубрёжки.','벼락치기','зубрёжки'),
+  W('출장','chuljang','командировка','work',2,'다음 주에 부산으로 출장을 가요.','На следующей неделе еду в командировку в Пусан.','출장','командировку'),
+  W('회의','hoeui','совещание','work',1,'오전 내내 회의가 있었어요.','Всё утро было совещание.','회의','совещание'),
+  W('월급','wolgeup','зарплата','work',1,'월급날이 제일 기다려져요.','Больше всего жду день зарплаты.','월급','зарплаты'),
+  W('야근','yageun','переработка вечером','work',2,'이번 주는 매일 야근이에요.','На этой неделе каждый день перерабатываю.','야근','перерабатываю'),
+  W('야식','yasik','ночной перекус','food',1,'어제 야식으로 치킨을 시켰어요.','Вчера на ночь заказали курицу.','야식','на ночь'),
+  W('단골','dangol','постоянный клиент','food',2,'저는 이 식당 단골이에요.','Я постоянный клиент этого ресторана.','단골','постоянный клиент'),
+  W('매콤하다','maekomhada','приятно островатый','food',2,'이 떡볶이는 적당히 매콤해요.','Этот токпокки в меру островатый.','매콤','островатый'),
+  W('배달','baedal','доставка еды','food',1,'비 오는 날엔 배달을 시켜요.','В дождь заказываю доставку.','배달','доставку'),
+  W('짐','jim','багаж','travel',1,'공항에서 짐을 잃어버렸어요.','Я потерял багаж в аэропорту.','짐','багаж'),
+  W('숙소','sukso','жильё в поездке','travel',2,'숙소는 역 근처로 잡았어요.','Жильё сняли рядом с вокзалом.','숙소','Жильё'),
+  W('항공권','hanggonggwon','авиабилет','travel',2,'항공권을 미리 예약했어요.','Авиабилет забронировал заранее.','항공권','Авиабилет'),
+  W('성수기','seongsugi','высокий сезон','travel',3,'성수기에는 호텔이 두 배로 비싸요.','В высокий сезон отели вдвое дороже.','성수기','высокий сезон'),
+  W('환승','hwanseung','пересадка','city',1,'2호선에서 3호선으로 환승했어요.','Сделал пересадку со второй линии на третью.','환승','пересадку'),
+  W('정류장','jeongnyujang','остановка','city',1,'다음 정류장에서 내리세요.','Выходите на следующей остановке.','정류장','остановке'),
+  W('막차','makcha','последний поезд','city',2,'막차를 놓쳐서 택시를 탔어요.','Опоздал на последний поезд и взял такси.','막차','последний поезд'),
+  W('길치','gilchi','человек без чувства направления','city',3,'저는 길치라서 지도가 꼭 필요해요.','Я вечно теряюсь, без карты никуда.','길치','теряюсь'),
+  W('할인','harin','скидка','money',1,'이 옷은 30% 할인 중이에요.','На эту одежду скидка 30%.','할인','скидка'),
+  W('환불','hwanbul','возврат денег','money',2,'사이즈가 안 맞아서 환불했어요.','Размер не подошёл, я вернул деньги.','환불','вернул деньги'),
+  W('계좌','gyejwa','банковский счёт','money',2,'계좌로 돈을 보냈어요.','Отправил деньги на счёт.','계좌','счёт'),
+  W('지름신','jireumsin','дух импульсивных покупок','money',3,'세일만 보면 지름신이 와요.','Как вижу распродажу — не могу не купить.','지름신','не могу не купить'),
+  W('몸살','momsal','ломота во всём теле','body',2,'몸살이 나서 하루 쉬었어요.','Всё тело ломит, взял день отдыха.','몸살','ломит'),
+  W('근육통','geunyuktong','крепатура','body',2,'어제 운동해서 근육통이 심해요.','Вчера тренировался — сильная крепатура.','근육통','крепатура'),
+  W('숨차다','sumchada','задыхаться от нагрузки','body',2,'계단만 올라가도 숨차요.','Только поднимусь по лестнице — уже задыхаюсь.','숨차','задыхаюсь'),
+  W('스트레칭','seuteureching','растяжка','body',1,'운동 전에 스트레칭을 해요.','Перед тренировкой делаю растяжку.','스트레칭','растяжку'),
+  W('설레다','seolleda','волноваться от предвкушения','emotion',2,'너를 만나기 전날은 항상 설레요.','Накануне встречи с тобой всегда волнуюсь.','설레','волнуюсь'),
+  W('억울하다','eogulhada','обидно от несправедливости','emotion',3,'제 잘못이 아닌데 혼나서 억울해요.','Отругали не за мою вину — так обидно.','억울','обидно'),
+  W('뿌듯하다','ppudeuthada','гордость за себя','emotion',3,'목표를 이뤄서 뿌듯해요.','Достиг цели — горжусь собой.','뿌듯','горжусь собой'),
+  W('소심하다','sosimhada','робкий, нерешительный','emotion',2,'저는 소심해서 먼저 말을 못 걸어요.','Я робкий, первым заговорить не могу.','소심','робкий'),
+  W('책임','chaegim','ответственность','abstract',3,'이 일은 제가 책임을 지겠습니다.','За это дело я возьму ответственность.','책임','ответственность'),
+  W('가능성','ganeungseong','вероятность, возможность','abstract',3,'성공할 가능성이 높아요.','Вероятность успеха высокая.','가능성','Вероятность'),
+  W('선택','seontaek','выбор','abstract',2,'후회 없는 선택을 하고 싶어요.','Хочу сделать выбор без сожалений.','선택','выбор'),
+  W('편견','pyeongyeon','предубеждение','abstract',3,'편견 없이 사람을 봐야 해요.','На людей надо смотреть без предубеждений.','편견','предубеждений'),
+  W('구독','gudok','подписка','internet',1,'채널을 구독하고 알림을 켰어요.','Подписался на канал и включил уведомления.','구독','Подписался'),
+  W('댓글','daetgeul','комментарий','internet',1,'영상에 댓글이 천 개 달렸어요.','Под видео тысяча комментариев.','댓글','комментариев'),
+  W('인증샷','injeungsyat','фото-доказательство','internet',3,'운동하고 인증샷을 올렸어요.','Потренировался и выложил фото как доказательство.','인증샷','фото как доказательство'),
+  W('알고리즘','algorijeum','алгоритм ленты','internet',2,'알고리즘이 자꾸 고양이 영상을 추천해요.','Алгоритм всё время подсовывает видео с котами.','알고리즘','Алгоритм'),
+  W('정','jeong','тёплая привязанность','korea',3,'한국 사람들은 정이 많아요.','У корейцев много душевной привязанности.','정','душевной привязанности'),
+  W('명절','myeongjeol','традиционный праздник','korea',2,'명절에는 고향에 내려가요.','На праздник еду в родной город.','명절','праздник'),
+  W('한복','hanbok','ханбок','korea',1,'경복궁에서 한복을 빌려 입었어요.','В Кёнбоккуне взяли напрокат ханбок.','한복','ханбок'),
+  W('회식','hoesik','корпоратив с коллегами','korea',2,'오늘 팀 회식이 있어요.','Сегодня у команды корпоратив.','회식','корпоратив'),
+  W('멘붕','menbung','полный шок','slang',2,'시험 문제를 보고 멘붕이 왔어요.','Увидел задания на экзамене — и всё, шок.','멘붕','шок'),
+  W('대박','daebak','круто, вот это да','slang',1,'이 노래 진짜 대박이야!','Эта песня — просто огонь!','대박','огонь'),
+  W('꿀팁','kkultip','лайфхак','slang',2,'요리 꿀팁 하나 알려줄게.','Дам тебе один кулинарный лайфхак.','꿀팁','лайфхак'),
+  W('인싸','inssa','душа компании','slang',3,'그 친구는 어딜 가나 인싸예요.','Этот парень везде душа компании.','인싸','душа компании'),
+  W('지각','jigak','опоздание','awkward',1,'또 지각해서 교수님께 혼났어요.','Снова опоздал и получил от профессора.','지각','опоздал'),
+  W('흑역사','heugyeoksa','позорное прошлое','awkward',3,'고등학교 사진은 제 흑역사예요.','Школьные фото — мой личный позор.','흑역사','позор'),
+  W('민망하다','minmanghada','неловко, стыдно','awkward',2,'이름을 잘못 불러서 민망했어요.','Перепутал имя — было очень неловко.','민망','неловко'),
+  W('삽질','sapjil','бесполезные усилия','awkward',3,'하루 종일 삽질만 했어요.','Весь день провозился впустую.','삽질','впустую'),
+  W('덕질','deokjil','фанатеть','fun',3,'요즘 새 아이돌 덕질 중이에요.','Сейчас фанатею от новой айдол-группы.','덕질','фанатею'),
+  W('스포일러','seupoilleo','спойлер','fun',1,'스포일러 하지 마세요!','Не спойлери!','스포일러','спойлери'),
+  W('정주행','jeongjuhaeng','марафон сериала','fun',3,'주말에 드라마를 정주행했어요.','За выходные посмотрел сериал залпом.','정주행','залпом'),
+  W('공연','gongyeon','концерт, выступление','fun',1,'어제 공연 표를 예매했어요.','Вчера купил билет на концерт.','공연','концерт'),
+  W('모순','mosun','противоречие','hardcore',3,'그 주장에는 모순이 있어요.','В этом утверждении есть противоречие.','모순','противоречие'),
+  W('타협','tahyeop','компромисс','hardcore',3,'양쪽이 타협점을 찾았어요.','Обе стороны нашли компромисс.','타협','компромисс'),
+  W('미묘하다','mimyohada','едва уловимый','hardcore',3,'두 색의 차이가 미묘해요.','Разница между цветами едва уловима.','미묘','едва уловима'),
+  W('역설','yeokseol','парадокс','hardcore',3,'그건 삶의 역설이에요.','Это парадокс жизни.','역설','парадокс'),
+  W('썸','sseom','стадия «между дружбой и отношениями»','adult',2,'우리 지금 썸 타는 중이에요.','У нас сейчас та самая стадия перед отношениями.','썸','стадия перед отношениями'),
+  W('밀당','mildang','игра в притяжение-отталкивание','adult',3,'밀당하지 말고 솔직하게 말해.','Не играй, скажи честно.','밀당','играй'),
+  W('고백','gobaek','признание в чувствах','adult',2,'용기를 내서 고백했어요.','Набрался смелости и признался.','고백','признался'),
+  W('질투','jiltu','ревность','adult',2,'질투 나서 하루 종일 말도 안 했어요.','От ревности весь день молчал.','질투','ревности'),
+];
+
+const DICT = [
+  {ko:'설레다',ru:'волноваться от предвкушения',topicRu:'Эмоции',mastery:2,exKo:'너를 만나기 전날은 항상 설레요.',exRu:'Накануне встречи с тобой я всегда волнуюсь.'},
+  {ko:'눈치',ru:'чуткость к обстановке',topicRu:'Люди',mastery:1,exKo:'그 사람은 눈치가 빨라요.',exRu:'Он очень чуткий.'},
+  {ko:'야식',ru:'ночной перекус',topicRu:'Еда',mastery:3,exKo:'어제 야식으로 치킨을 시켰어요.',exRu:'Вчера на ночь заказали курицу.'},
+  {ko:'환승',ru:'пересадка',topicRu:'Транспорт',mastery:3,exKo:'2호선에서 3호선으로 환승했어요.',exRu:'Пересел со второй на третью линию.'},
+  {ko:'억울하다',ru:'обидно от несправедливости',topicRu:'Эмоции',mastery:1,exKo:'혼나서 억울해요.',exRu:'Меня отругали — обидно.'},
+  {ko:'단골',ru:'постоянный клиент',topicRu:'Еда',mastery:2,exKo:'저는 이 식당 단골이에요.',exRu:'Я постоянный клиент этого ресторана.'},
+];
+
+WORDS.push(
+  W('빨래','ppallae','стирка','life',1,'주말에 빨래를 다 했어요.','В выходные перестирал всё бельё.','빨래','перестирал'),
+  W('쓰레기','sseuregi','мусор','life',1,'쓰레기를 버리고 올게요.','Схожу выброшу мусор.','쓰레기','мусор'),
+  W('낮잠','natjam','дневной сон','life',2,'점심 먹고 낮잠을 잤어요.','После обеда подремал днём.','낮잠','подремал днём'),
+  W('집들이','jipdeuri','новоселье','life',2,'다음 주에 집들이를 해요.','На следующей неделе празднуем новоселье.','집들이','новоселье'),
+  W('수리','suri','ремонт техники','life',2,'세탁기 수리를 맡겼어요.','Отдал стиральную машину в ремонт.','수리','ремонт'),
+  W('이사','isa','переезд','life',1,'다음 달에 이사를 가요.','В следующем месяце переезжаю.','이사','переезжаю'),
+  W('첫인상','cheosinsang','первое впечатление','people',2,'첫인상이 참 좋았어요.','Первое впечатление было отличное.','첫인상','Первое впечатление'),
+  W('선배','seonbae','старший товарищ','people',1,'대학 선배가 많이 도와줬어요.','Старшекурсник мне сильно помог.','선배','Старшекурсник'),
+  W('절친','jeolchin','лучший друг','people',2,'그 애는 제 절친이에요.','Она моя лучшая подруга.','절친','лучшая подруга'),
+  W('오해','ohae','недопонимание','people',2,'작은 오해로 싸웠어요.','Поругались из-за мелкого недопонимания.','오해','недопонимания'),
+  W('연락','yeollak','связь, контакт','people',1,'요즘 연락이 뜸해요.','Мы в последнее время редко общаемся.','연락','общаемся'),
+  W('낯가리다','natgarida','стесняться незнакомых','people',3,'저는 낯을 좀 가려요.','Я стесняюсь незнакомых людей.','낯','стесняюсь'),
+  W('전공','jeongong','специальность','study',1,'제 전공은 한국학이에요.','Моя специальность — корееведение.','전공','специальность'),
+  W('강의','gangui','лекция','study',1,'오늘 강의가 세 개나 있어요.','Сегодня целых три лекции.','강의','лекции'),
+  W('발표','balpyo','презентация, доклад','study',2,'내일 발표 준비를 해야 해요.','Завтра надо готовить доклад.','발표','доклад'),
+  W('복습','bokseup','повторение пройденного','study',2,'매일 복습하면 안 잊어버려요.','Если повторять каждый день, не забудешь.','복습','повторять'),
+  W('졸업','joreop','выпуск, окончание','study',1,'내년에 졸업해요.','В следующем году заканчиваю учёбу.','졸업','заканчиваю учёбу'),
+  W('휴학','hyuhak','академический отпуск','study',3,'일 년 휴학하기로 했어요.','Решил взять год академического отпуска.','휴학','академического отпуска'),
+  W('면접','myeonjeop','собеседование','work',2,'내일 면접이 있어서 긴장돼요.','Завтра собеседование, волнуюсь.','면접','собеседование'),
+  W('이력서','iryeokseo','резюме','work',2,'이력서를 다섯 군데 냈어요.','Отправил резюме в пять мест.','이력서','резюме'),
+  W('승진','seungjin','повышение','work',2,'올해 승진했어요.','В этом году меня повысили.','승진','повысили'),
+  W('퇴사','toesa','увольнение по своей воле','work',2,'고민 끝에 퇴사했어요.','После долгих раздумий уволился.','퇴사','уволился'),
+  W('마감','magam','дедлайн','work',2,'마감이 내일까지예요.','Дедлайн — до завтра.','마감','Дедлайн'),
+  W('거래처','georaecheo','деловой партнёр','work',3,'거래처와 미팅이 잡혔어요.','Назначили встречу с партнёрами.','거래처','партнёрами'),
+  W('반찬','banchan','закуски к рису','food',1,'반찬이 여덟 가지나 나왔어요.','Подали целых восемь закусок.','반찬','закусок'),
+  W('외식','oesik','поход в ресторан всей семьёй','food',2,'오늘 저녁은 외식하기로 했어요.','Сегодня решили поужинать вне дома.','외식','поужинать вне дома'),
+  W('싱겁다','singgeopda','пресный','food',2,'국이 좀 싱거워요.','Суп немного пресный.','싱거','пресный'),
+  W('느끼하다','neukkihada','жирный, приторный','food',3,'피자를 많이 먹어서 느끼해요.','Съел много пиццы — теперь мутит от жирного.','느끼','жирного'),
+  W('메뉴판','menyupan','меню','food',1,'메뉴판 좀 주세요.','Дайте, пожалуйста, меню.','메뉴판','меню'),
+  W('포장','pojang','еда с собой','food',1,'여기서 안 먹고 포장할게요.','Возьму с собой, а не здесь.','포장','с собой'),
+  W('여권','yeogwon','загранпаспорт','travel',1,'여권 기한이 다 됐어요.','У меня истёк загранпаспорт.','여권','загранпаспорт'),
+  W('환전','hwanjeon','обмен валюты','travel',2,'공항에서 환전했어요.','Поменял валюту в аэропорту.','환전','Поменял валюту'),
+  W('당일치기','dangilchigi','поездка одним днём','travel',3,'속초로 당일치기 다녀왔어요.','Съездили в Сокчхо одним днём.','당일치기','одним днём'),
+  W('기념품','ginyeompum','сувенир','travel',1,'가족에게 기념품을 샀어요.','Купил сувениры семье.','기념품','сувениры'),
+  W('일정','iljeong','расписание поездки','travel',2,'일정이 너무 빡빡해요.','Расписание слишком плотное.','일정','Расписание'),
+  W('예약','yeyak','бронирование','travel',1,'호텔을 미리 예약했어요.','Забронировал отель заранее.','예약','Забронировал'),
+  W('신호등','sinhodeung','светофор','city',1,'신호등이 빨간불이에요.','На светофоре красный.','신호등','светофоре'),
+  W('횡단보도','hoengdanbodo','пешеходный переход','city',2,'횡단보도로 건너세요.','Переходите по пешеходному переходу.','횡단보도','пешеходному переходу'),
+  W('교통체증','gyotongchejeung','пробка','city',3,'출근길 교통체증이 심해요.','По утрам жуткие пробки.','교통체증','пробки'),
+  W('지하철역','jihacheollyeok','станция метро','city',1,'지하철역까지 걸어서 5분이에요.','До станции метро пять минут пешком.','지하철역','станции метро'),
+  W('골목','golmok','переулок','city',2,'좁은 골목에 카페가 많아요.','В узких переулках много кафе.','골목','переулках'),
+  W('주차','jucha','парковка','city',1,'주차할 자리가 없어요.','Негде припарковаться.','주차','припарковаться'),
+  W('영수증','yeongsujeung','чек','money',1,'영수증 버리지 마세요.','Не выбрасывайте чек.','영수증','чек'),
+  W('적금','jeokgeum','накопительный вклад','money',3,'매달 적금을 넣고 있어요.','Каждый месяц кладу на накопительный вклад.','적금','накопительный вклад'),
+  W('용돈','yongdon','карманные деньги','money',2,'부모님께 용돈을 받았어요.','Получил карманные деньги от родителей.','용돈','карманные деньги'),
+  W('가성비','gaseongbi','соотношение цены и качества','money',3,'이 노트북은 가성비가 좋아요.','У этого ноутбука отличное соотношение цены и качества.','가성비','соотношение цены и качества'),
+  W('세일','seil','распродажа','money',1,'백화점 세일 기간이에요.','В универмаге сейчас распродажа.','세일','распродажа'),
+  W('빚','bit','долг','money',2,'빚을 다 갚았어요.','Я выплатил все долги.','빚','долги'),
+  W('감기','gamgi','простуда','body',1,'감기에 걸려서 목이 아파요.','Простудился, болит горло.','감기','Простудился'),
+  W('처방전','cheobangjeon','рецепт врача','body',3,'의사가 처방전을 써 줬어요.','Врач выписал рецепт.','처방전','рецепт'),
+  W('체력','cheryeok','выносливость','body',2,'요즘 체력이 많이 떨어졌어요.','В последнее время сильно упала выносливость.','체력','выносливость'),
+  W('다이어트','daieoteu','диета','body',1,'다이어트 중이라 야식을 끊었어요.','Сижу на диете и бросил есть на ночь.','다이어트','диете'),
+  W('숙면','sungmyeon','крепкий сон','body',3,'커피를 줄이니 숙면했어요.','Сократил кофе — стал крепко спать.','숙면','крепко спать'),
+  W('땀','ttam','пот','body',1,'운동하니까 땀이 많이 나요.','На тренировке сильно потею.','땀','потею'),
+  W('서운하다','seounhada','быть задетым невниманием','emotion',3,'연락이 없어서 조금 서운했어요.','Мне было немного обидно от твоего молчания.','서운','обидно'),
+  W('부럽다','bureopda','завидовать','emotion',1,'네 여행 사진 보니까 부러워.','Смотрю на твои фото — завидую.','부러','завидую'),
+  W('짜증나다','jjajeungnada','раздражаться','emotion',2,'날씨 때문에 짜증나요.','Из-за погоды всё раздражает.','짜증','раздражает'),
+  W('든든하다','deundeunhada','чувствовать надёжность','emotion',3,'네가 있어서 든든해.','С тобой я чувствую себя спокойно.','든든','спокойно'),
+  W('무섭다','museopda','страшно','emotion',1,'공포 영화가 너무 무서워요.','Ужастик слишком страшный.','무서','страшный'),
+  W('설렘','seollem','трепет предвкушения','emotion',3,'새 학기의 설렘이 좋아요.','Люблю трепет перед новым семестром.','설렘','трепет'),
+  W('목적','mokjeok','цель','abstract',2,'이 모임의 목적이 뭐예요?','Какая цель у этой встречи?','목적','цель'),
+  W('결과','gyeolgwa','результат','abstract',1,'결과가 기대돼요.','Жду результат.','결과','результат'),
+  W('원인','wonin','причина','abstract',2,'사고의 원인을 조사 중이에요.','Расследуют причину аварии.','원인','причину'),
+  W('의미','uimi','смысл','abstract',2,'이 단어의 의미가 뭐예요?','Какой смысл у этого слова?','의미','смысл'),
+  W('기준','gijun','критерий','abstract',3,'평가 기준이 애매해요.','Критерии оценки размытые.','기준','Критерии'),
+  W('영향','yeonghyang','влияние','abstract',3,'날씨가 기분에 영향을 줘요.','Погода влияет на настроение.','영향','влияет'),
+  W('와이파이','waipai','вайфай','internet',1,'와이파이 비밀번호 뭐예요?','Какой пароль от вайфая?','와이파이','вайфая'),
+  W('충전기','chungjeongi','зарядка','internet',1,'충전기를 집에 두고 왔어요.','Забыл зарядку дома.','충전기','зарядку'),
+  W('사진첩','sajincheop','галерея фото','internet',2,'사진첩이 꽉 찼어요.','Галерея забита фотографиями.','사진첩','Галерея'),
+  W('생방송','saengbangsong','прямой эфир','internet',2,'생방송으로 봤어요.','Смотрел в прямом эфире.','생방송','прямом эфире'),
+  W('악플','akpeul','злой комментарий','internet',3,'악플 때문에 상처받았어요.','Обидные комментарии задели.','악플','Обидные комментарии'),
+  W('비밀번호','bimilbeonho','пароль','internet',1,'비밀번호를 까먹었어요.','Забыл пароль.','비밀번호','пароль'),
+  W('설날','seollal','Соллаль, Новый год','korea',2,'설날에 세배를 해요.','На Соллаль кланяются старшим.','설날','Соллаль'),
+  W('김장','gimjang','заготовка кимчи','korea',3,'가을에 김장을 해요.','Осенью всей семьёй делают запас кимчи.','김장','запас кимчи'),
+  W('찜질방','jjimjilbang','чимчильбан','korea',2,'주말에 찜질방에 갔어요.','В выходные ходили в корейскую баню.','찜질방','корейскую баню'),
+  W('아이돌','aidol','айдол','korea',1,'좋아하는 아이돌 콘서트에 갔어요.','Ходила на концерт любимого айдола.','아이돌','айдола'),
+  W('존댓말','jondaenmal','вежливая речь','korea',3,'선생님께는 존댓말을 써요.','С учителем говорят вежливо.','존댓말','вежливо'),
+  W('배달문화','baedalmunhwa','культура доставки','korea',3,'한국의 배달문화는 빨라요.','Корейская доставка невероятно быстрая.','배달문화','доставка'),
+  W('갑분싸','gapbunssa','неловкая тишина','slang',3,'그 말 한마디에 갑분싸됐어요.','От одной фразы стало неловко и тихо.','갑분싸','неловко и тихо'),
+  W('짱','jjang','супер','slang',1,'이거 진짜 짱이야!','Это реально супер!','짱','супер'),
+  W('노잼','nojaem','не смешно, скучно','slang',2,'그 영화 완전 노잼이었어.','Фильм был совсем скучный.','노잼','скучный'),
+  W('꿀잼','kkuljaem','очень весело','slang',2,'어제 파티 꿀잼이었어.','Вчерашняя вечеринка была огонь.','꿀잼','огонь'),
+  W('현타','hyeonta','отрезвляющее разочарование','slang',3,'통장 보고 현타 왔어요.','Посмотрел на счёт и приуныл.','현타','приуныл'),
+  W('심쿵','simkung','сердце ёкнуло','slang',3,'그 미소에 심쿵했어요.','От этой улыбки сердце ёкнуло.','심쿵','сердце ёкнуло'),
+  W('실수','silsu','оплошность','awkward',1,'이름을 잘못 불러서 실수했어요.','Перепутал имя — вышла оплошность.','실수','оплошность'),
+  W('당황하다','danghwanghada','растеряться','awkward',2,'갑자기 물어봐서 당황했어요.','Внезапно спросили — я растерялся.','당황','растерялся'),
+  W('오타','ota','опечатка','awkward',1,'상사에게 오타를 보냈어요.','Отправил начальнику сообщение с опечаткой.','오타','опечаткой'),
+  W('넘어지다','neomeojida','упасть','awkward',1,'사람들 앞에서 넘어졌어요.','Упал прямо перед людьми.','넘어','Упал'),
+  W('민폐','minpye','доставлять неудобства','awkward',3,'늦게 와서 민폐를 끼쳤어요.','Опоздал и всем создал неудобства.','민폐','неудобства'),
+  W('잠수타다','jamsutada','пропасть со связи','awkward',3,'그 친구가 갑자기 잠수탔어요.','Друг внезапно пропал со связи.','잠수','пропал со связи'),
+  W('예능','yeneung','развлекательное шоу','fun',2,'주말엔 예능을 봐요.','По выходным смотрю развлекательные шоу.','예능','развлекательные шоу'),
+  W('시청률','sicheongnyul','рейтинг просмотров','fun',3,'이 드라마 시청률이 높아요.','У этой дорамы высокий рейтинг.','시청률','рейтинг'),
+  W('굿즈','gutjeu','мерч','fun',2,'콘서트에서 굿즈를 샀어요.','На концерте купил мерч.','굿즈','мерч'),
+  W('무대','mudae','сцена','fun',1,'무대가 정말 화려했어요.','Сцена была очень яркой.','무대','Сцена'),
+  W('연습생','yeonseupsaeng','стажёр агентства','fun',3,'그 가수는 5년 동안 연습생이었어요.','Певец пять лет был стажёром агентства.','연습생','стажёром агентства'),
+  W('앙코르','angkoreu','бис','fun',2,'앙코르를 두 번 했어요.','Спели на бис дважды.','앙코르','на бис'),
+  W('본질','bonjil','сущность','hardcore',3,'문제의 본질을 봐야 해요.','Нужно видеть сущность проблемы.','본질','сущность'),
+  W('추상적','chusangjeok','абстрактный','hardcore',3,'설명이 너무 추상적이에요.','Объяснение слишком абстрактное.','추상적','абстрактное'),
+  W('편향','pyeonhyang','искажение, перекос','hardcore',3,'자료에 편향이 있어요.','В данных есть перекос.','편향','перекос'),
+  W('필연','piryeon','неизбежность','hardcore',3,'우연이 아니라 필연이에요.','Это не случайность, а неизбежность.','필연','неизбежность'),
+  W('맥락','maengnak','контекст','hardcore',3,'맥락 없이 이해하기 어려워요.','Без контекста трудно понять.','맥락','контекста'),
+  W('타당하다','tadanghada','обоснованный','hardcore',3,'그 주장은 타당해요.','Этот довод обоснован.','타당','обоснован'),
+  W('짝사랑','jjaksarang','безответная любовь','adult',2,'삼 년 동안 짝사랑했어요.','Три года любил безответно.','짝사랑','безответно'),
+  W('데이트','deiteu','свидание','adult',1,'주말에 데이트가 있어요.','На выходных у меня свидание.','데이트','свидание'),
+  W('스킨십','seukinsip','прикосновения','adult',3,'스킨십이 자연스러워졌어요.','Прикосновения стали естественными.','스킨십','Прикосновения'),
+  W('이별','ibyeol','расставание','adult',2,'이별 후에 많이 울었어요.','После расставания много плакал.','이별','расставания'),
+  W('바람','baram','измена','adult',3,'바람은 절대 용서 못 해요.','Измену я никогда не прощу.','바람','Измену'),
+  W('첫키스','cheotkiseu','первый поцелуй','adult',2,'첫키스는 기억에 남아요.','Первый поцелуй запоминается.','첫키스','Первый поцелуй'),
+);
+
+WORDS.push(
+  W('가족','gajok','семья','topik1',1,'우리 가족은 네 명이에요.','У нас в семье четыре человека.','가족','семье'),
+  W('시간','sigan','время','topik1',1,'시간이 없어서 못 갔어요.','Не было времени, поэтому не пошёл.','시간','времени'),
+  W('날씨','nalssi','погода','topik1',1,'오늘 날씨가 참 좋아요.','Сегодня отличная погода.','날씨','погода'),
+  W('취미','chwimi','хобби','topik1',1,'제 취미는 사진 찍기예요.','Моё хобби — фотография.','취미','хобби'),
+  W('약속','yaksok','договорённость о встрече','topik1',1,'친구와 약속이 있어요.','У меня назначена встреча с другом.','약속','назначена встреча'),
+  W('가격','gagyeok','цена','topik1',1,'가격이 조금 비싸요.','Цена немного высокая.','가격','Цена'),
+  W('건강','geongang','здоровье','topik1',1,'건강이 제일 중요해요.','Здоровье важнее всего.','건강','Здоровье'),
+  W('계절','gyejeol','время года','topik1',1,'어느 계절을 좋아해요?','Какое время года вам нравится?','계절','время года'),
+  W('교실','gyosil','аудитория','topik1',1,'교실이 아주 조용해요.','В аудитории очень тихо.','교실','аудитории'),
+  W('시작하다','sijakhada','начинать','topik1',1,'수업이 아홉 시에 시작해요.','Занятие начинается в девять.','시작','начинается'),
+  W('준비하다','junbihada','готовить(ся)','topik1',1,'시험을 준비하고 있어요.','Я готовлюсь к экзамену.','준비','готовлюсь'),
+  W('도와주다','dowajuda','помогать','topik1',1,'친구가 저를 도와줬어요.','Друг мне помог.','도와','помог'),
+  W('바쁘다','bappeuda','быть занятым','topik1',1,'요즘 일이 많아서 바빠요.','Сейчас много работы, я занят.','바빠','занят'),
+  W('쉽다','swipda','лёгкий','topik1',1,'이 문제는 아주 쉬워요.','Эта задача очень лёгкая.','쉬워','лёгкая'),
+  W('어렵다','eoryeopda','трудный','topik1',1,'한국어 발음이 어려워요.','Корейское произношение трудное.','어려','трудное'),
+  W('필요하다','piryohada','быть нужным','topik1',2,'여기에 서명이 필요해요.','Здесь нужна подпись.','필요','нужна'),
+  W('빌리다','billida','брать взаймы','topik1',2,'도서관에서 책을 빌렸어요.','Взял книгу в библиотеке.','빌렸','Взял'),
+  W('고치다','gochida','чинить, исправлять','topik1',2,'자전거를 고쳤어요.','Починил велосипед.','고쳤','Починил'),
+  W('초대하다','chodaehada','приглашать','topik1',2,'생일에 친구들을 초대했어요.','Пригласил друзей на день рождения.','초대','Пригласил'),
+  W('전화번호','jeonhwabeonho','номер телефона','topik1',1,'전화번호를 알려 주세요.','Скажите, пожалуйста, номер телефона.','전화번호','номер телефона'),
+  W('증가하다','jeunggahada','возрастать','topik2',3,'관광객 수가 크게 증가했습니다.','Число туристов заметно выросло.','증가','выросло'),
+  W('감소하다','gamsohada','сокращаться','topik2',3,'출산율이 계속 감소하고 있습니다.','Рождаемость продолжает снижаться.','감소','снижаться'),
+  W('차지하다','chajihada','занимать долю','topik2',3,'전체의 절반을 차지합니다.','Составляет половину от общего числа.','차지','Составляет'),
+  W('반면에','banmyeone','напротив, тогда как','topik2',3,'도시는 편리하다. 반면에 공기가 나쁘다.','В городе удобно. Зато воздух плохой.','반면에','Зато'),
+  W('따라서','ttaraseo','следовательно','topik2',3,'수요가 늘었다. 따라서 가격도 올랐다.','Спрос вырос, следовательно, выросла и цена.','따라서','следовательно'),
+  W('그러므로','geureomeuro','поэтому (книжн.)','topik2',3,'환경이 중요하다. 그러므로 실천해야 한다.','Экология важна, поэтому нужно действовать.','그러므로','поэтому'),
+  W('예를 들어','yereul deureo','например','topik2',2,'예를 들어 재활용을 들 수 있다.','Например, можно назвать переработку отходов.','예를 들어','Например'),
+  W('결론적으로','gyeollonjeogeuro','в заключение','topik2',3,'결론적으로 교육이 필요하다.','В заключение: необходимо образование.','결론적으로','В заключение'),
+  W('주장하다','jujanghada','утверждать','topik2',3,'전문가들은 규제가 필요하다고 주장한다.','Эксперты утверждают, что нужны ограничения.','주장','утверждают'),
+  W('제시하다','jesihada','предлагать, приводить','topik2',3,'해결 방안을 제시했습니다.','Он предложил способ решения.','제시','предложил'),
+  W('강조하다','gangjohada','подчёркивать','topik2',3,'연구자는 협력을 강조했다.','Исследователь подчеркнул важность сотрудничества.','강조','подчеркнул'),
+  W('분석하다','bunseokhada','анализировать','topik2',3,'자료를 자세히 분석했다.','Данные детально проанализировали.','분석','проанализировали'),
+  W('조사','josa','исследование, опрос','topik2',2,'설문 조사 결과가 나왔다.','Появились результаты опроса.','조사','опроса'),
+  W('비율','biyul','доля, процент','topik2',3,'응답자의 비율이 높다.','Доля респондентов высока.','비율','Доля'),
+  W('현상','hyeonsang','явление','topik2',3,'이런 현상은 흔하지 않다.','Такое явление встречается редко.','현상','явление'),
+  W('대상','daesang','объект, целевая группа','topik2',3,'조사 대상은 대학생이었다.','Объектом опроса были студенты.','대상','Объектом'),
+  W('제도','jedo','система, институт','topik2',3,'새로운 제도가 도입되었다.','Ввели новую систему.','제도','систему'),
+  W('정책','jeongchaek','политика (государства)','topik2',3,'정부가 새 정책을 발표했다.','Правительство объявило новую политику.','정책','политику'),
+  W('환경','hwangyeong','окружающая среда','topik2',2,'환경 보호가 시급하다.','Защита окружающей среды безотлагательна.','환경','окружающей среды'),
+  W('경제','gyeongje','экономика','topik2',2,'경제가 빠르게 회복됐다.','Экономика быстро восстановилась.','경제','Экономика'),
+  W('사회적','sahoejeok','социальный','topik2',3,'사회적 관심이 필요하다.','Нужно общественное внимание.','사회적','общественное'),
+  W('개선하다','gaeseonhada','улучшать','topik2',3,'근무 환경을 개선해야 한다.','Условия труда надо улучшить.','개선','улучшить'),
+  W('해결하다','haegyeolhada','решать проблему','topik2',2,'문제를 빨리 해결했다.','Проблему решили быстро.','해결','решили'),
+  W('경향','gyeonghyang','тенденция','topik2',3,'젊은 층에서 이런 경향이 강하다.','У молодёжи такая тенденция сильнее.','경향','тенденция'),
+);
+
+WORDS.push(
+  W('열쇠','yeolsoe','ключ','life',1,'열쇠를 집에 두고 나왔어요.','Забыл ключ дома.','열쇠','ключ'),
+  W('창문','changmun','окно','life',1,'창문을 열어서 환기했어요.','Открыл окно и проветрил.','창문','окно'),
+  W('서랍','seorap','ящик стола','life',2,'서랍에 양말이 있어요.','Носки лежат в ящике.','서랍','ящике'),
+  W('베개','begae','подушка','life',1,'베개가 너무 낮아요.','Подушка слишком низкая.','베개','Подушка'),
+  W('수건','sugeon','полотенце','life',1,'깨끗한 수건 좀 주세요.','Дайте, пожалуйста, чистое полотенце.','수건','полотенце'),
+  W('냉장고','naengjanggo','холодильник','life',1,'냉장고에 우유가 없어요.','В холодильнике нет молока.','냉장고','холодильнике'),
+  W('전자레인지','jeonjareinji','микроволновка','life',2,'전자레인지에 데워 드세요.','Разогрейте в микроволновке.','전자레인지','микроволновке'),
+  W('계단','gyedan','лестница','life',1,'엘리베이터 대신 계단으로 갔어요.','Пошёл по лестнице вместо лифта.','계단','лестнице'),
+  W('우산','usan','зонт','life',1,'우산을 지하철에 놓고 내렸어요.','Оставил зонт в метро.','우산','зонт'),
+  W('정리','jeongni','наведение порядка','life',2,'방 정리를 다 했어요.','Навёл порядок в комнате.','정리','порядок'),
+  W('후배','hubae','младший товарищ','people',1,'후배가 저를 잘 따라요.','Младший коллега тянется ко мне.','후배','Младший коллега'),
+  W('이웃','iut','сосед','people',2,'이웃과 사이가 좋아요.','У меня хорошие отношения с соседями.','이웃','соседями'),
+  W('사촌','sachon','двоюродный брат/сестра','people',2,'사촌 결혼식에 갔어요.','Ходил на свадьбу двоюродного брата.','사촌','двоюродного брата'),
+  W('동료','dongnyo','коллега','people',1,'동료들과 점심을 먹었어요.','Пообедал с коллегами.','동료','коллегами'),
+  W('지인','jiin','знакомый','people',3,'지인 소개로 만났어요.','Познакомились через общего знакомого.','지인','знакомого'),
+  W('배려','baeryeo','забота, деликатность','people',3,'작은 배려가 고마웠어요.','Была благодарна за маленькую заботу.','배려','заботу'),
+  W('험담','heomdam','сплетни за спиной','people',3,'뒤에서 험담하지 마세요.','Не сплетничайте за спиной.','험담','сплетничайте'),
+  W('화해','hwahae','примирение','people',2,'싸운 뒤에 화해했어요.','После ссоры мы помирились.','화해','помирились'),
+  W('신뢰','silloe','доверие','people',3,'신뢰를 쌓는 데 시간이 걸려요.','На доверие нужно время.','신뢰','доверие'),
+  W('응원','eungwon','поддержка','people',2,'항상 응원할게요.','Всегда буду поддерживать.','응원','поддерживать'),
+  W('숙제','sukje','домашка','study',1,'숙제를 아직 못 했어요.','Ещё не сделал домашку.','숙제','домашку'),
+  W('필기','pilgi','конспект','study',2,'필기를 좀 빌려줄래?','Дашь списать конспект?','필기','конспект'),
+  W('도서관','doseogwan','библиотека','study',1,'도서관에서 공부했어요.','Занимался в библиотеке.','도서관','библиотеке'),
+  W('학점','hakjeom','баллы за курс','study',3,'이번 학기 학점이 잘 나왔어요.','В этом семестре хорошие баллы.','학점','баллы'),
+  W('재수강','jaesugang','пересдача курса','study',3,'그 과목은 재수강해야 해요.','Этот предмет придётся проходить заново.','재수강','проходить заново'),
+  W('조별과제','jobyeolgwaje','групповой проект','study',3,'조별과제가 제일 힘들어요.','Групповой проект — самое тяжёлое.','조별과제','Групповой проект'),
+  W('출석','chulseok','посещаемость','study',2,'출석이 성적에 반영돼요.','Посещаемость влияет на оценку.','출석','Посещаемость'),
+  W('논문','nonmun','научная работа','study',3,'논문을 쓰느라 밤을 새웠어요.','Не спал всю ночь из-за научной работы.','논문','научной работы'),
+  W('세탁기','setakgi','стиральная машина','life',1,'세탁기가 고장 나서 손빨래를 했어요.','Стиральная машина сломалась, и я постирал руками.','세탁기','Стиральная машина'),
+  W('화장실','hwajangsil','туалет, ванная','life',1,'화장실이 어디에 있어요?','Где находится туалет?','화장실','туалет'),
+  W('거실','geosil','гостиная','life',1,'거실에서 텔레비전을 봐요.','Смотрю телевизор в гостиной.','거실','гостиной'),
+  W('부엌','bueok','кухня','life',1,'부엌에서 맛있는 냄새가 나요.','Из кухни доносится вкусный запах.','부엌','кухни'),
+  W('베란다','beranda','балкон','life',1,'베란다에 화분을 키워요.','На балконе выращиваю цветы в горшках.','베란다','балконе'),
+  W('전세','jeonse','чонсе — аренда с крупным залогом','life',3,'전세로 집을 구했어요.','Нашёл жильё по системе чонсе.','전세','чонсе'),
+  W('관리비','gwallibi','плата за обслуживание дома','life',2,'매달 관리비를 내요.','Каждый месяц плачу за обслуживание дома.','관리비','плачу за обслуживание дома'),
+  W('초인종','choinjong','дверной звонок','life',2,'초인종이 울려서 문을 열었어요.','Зазвонил звонок, и я открыл дверь.','초인종','звонок'),
+  W('택배','taekbae','посылка, доставка','life',1,'택배가 문 앞에 와 있어요.','Посылка лежит у двери.','택배','Посылка'),
+  W('분리수거','bullisugeo','сортировка мусора','life',2,'분리수거는 화요일에 해요.','Сортировку мусора делаем по вторникам.','분리수거','Сортировку мусора'),
+  W('정전','jeongjeon','отключение электричества','life',2,'갑자기 정전이 됐어요.','Внезапно отключилось электричество.','정전이 됐어요','отключилось электричество'),
+  W('곰팡이','gompangi','плесень','life',2,'욕실에 곰팡이가 생겼어요.','В ванной появилась плесень.','곰팡이','плесень'),
+  W('환기','hwangi','проветривание','life',2,'요리할 때는 환기를 시켜야 해요.','Во время готовки нужно проветривать.','환기를 시켜야','нужно проветривать'),
+  W('커튼','keoteun','занавеска, штора','life',1,'아침에 커튼을 걷었어요.','Утром отдёрнул занавески.','커튼','занавески'),
+  W('세제','seje','стиральный порошок','life',1,'세제를 너무 많이 넣었어요.','Насыпал слишком много порошка.','세제','порошка'),
+  W('건조기','geonjogi','сушильная машина','life',1,'빨래를 건조기에 돌려요.','Сушу белье в сушильной машине.','건조기','сушильной машине'),
+  W('다림질','darimjil','гладить бельё','life',2,'셔츠 다림질이 제일 귀찮아요.','Гладить рубашки — самое муторное дело.','다림질','Гладить'),
+  W('전등','jeondeung','лампа, светильник','life',1,'방 전등이 나갔어요.','Лампа в комнате перегорела.','전등','Лампа'),
+  W('배수구','baesugu','сливное отверстие','life',2,'배수구가 막혔어요.','Слив забился.','배수구','Слив'),
+  W('집안일','jibannil','домашние дела','life',1,'주말에는 집안일을 몰아서 해요.','По выходным делаю все домашние дела сразу.','집안일','домашние дела'),
+  W('정떨어지다','jeongtteoreojida','терять симпатию к кому-то','people',3,'그 행동 때문에 정떨어졌어요.','Из-за этого поступка я разочаровался в нём.','정떨어졌어요','разочаровался в нём'),
+  W('인연','inyeon','судьбоносная связь','people',3,'우리는 특별한 인연인 것 같아요.','Кажется, у нас особая судьбоносная связь.','인연','судьбоносная связь'),
+  W('다투다','datuda','поссориться, спорить','people',2,'어제 친구랑 다퉜어요.','Вчера поссорился с другом.','다퉜어요','поссорился'),
+  W('배신','baesin','предательство','people',2,'친구의 배신에 상처받았어요.','Меня ранило предательство друга.','배신','предательство'),
+  W('재회','jaehwe','примирение, встреча вновь','people',2,'헤어진 후에 재회했어요.','После расставания мы снова сошлись.','재회했어요','снова сошлись'),
+  W('통하다','tonghada','понимать друг друга без слов','people',2,'우리는 말이 잘 통해요.','Мы отлично понимаем друг друга.','통해요','понимаем друг друга'),
+  W('삐지다','ppijida','обижаться, дуться','people',2,'별일도 아닌데 삐졌어요.','Обиделся из-за мелочи.','삐졌어요','Обиделся'),
+  W('서로','seoro','друг друга, взаимно','people',1,'우리는 서로 도와줘요.','Мы помогаем друг другу.','서로','друг другу'),
+  W('헤어지다','heeojida','расставаться, разрывать отношения','people',2,'결국 남자친구랑 헤어졌어요.','В итоге я расстался с парнем.','헤어졌어요','расстался'),
+  W('의지하다','uijihada','опираться, полагаться на кого-то','people',3,'힘들 때 서로 의지해요.','В трудные времена мы опираемся друг на друга.','의지해요','опираемся друг на друга'),
+  W('챙기다','chaenggida','заботиться, присматривать','people',1,'동생을 잘 챙겨 주세요.','Позаботься о младшем брате.','챙겨','Позаботься'),
+  W('서먹하다','seomeokhada','чувствовать неловкость','people',3,'오랜만에 만나서 좀 서먹했어요.','Мы давно не виделись, и было немного неловко.','서먹했어요','неловко'),
+  W('인간관계','ingangwangye','межличностные отношения','people',2,'인간관계가 제일 어려워요.','Межличностные отношения — самое сложное.','인간관계','Межличностные отношения'),
+  W('삼각관계','samgakgwangye','любовный треугольник','people',3,'드라마에 삼각관계가 나와요.','В дораме есть любовный треугольник.','삼각관계','любовный треугольник'),
+  W('사이','sai','отношения, дистанция между людьми','people',1,'저희는 사이가 좋아요.','Мы в хороших отношениях друг с другом.','사이가 좋아요','в хороших отношениях'),
+  W('편들다','pyeondeulda','вставать на чью-то сторону','people',2,'엄마는 항상 언니 편을 들어요.','Мама всегда встаёт на сторону сестры.','편을 들어요','встаёт на сторону'),
+  W('무시하다','musihada','игнорировать, пренебрегать','people',2,'사람을 무시하면 안 돼요.','Нельзя пренебрежительно относиться к людям.','무시하면','пренебрежительно относиться'),
+  W('배웅하다','baeunghada','провожать','people',1,'공항까지 배웅해 줬어요.','Он провожал меня до аэропорта.','배웅해','провожал'),
+  W('마중','majung','встреча (кого-то)','people',1,'역까지 마중 나갈게요.','Я встречу тебя на станции.','마중 나갈게요','встречу'),
+  W('애착','aechak','привязанность к чему-то/кому-то','people',2,'그 인형에 애착이 많아요.','У меня сильная привязанность к этой игрушке.','애착','привязанность'),
+  W('입학','iphak','поступление (в учебное заведение)','study',1,'다음 달에 대학교에 입학해요.','В следующем месяце поступаю в университет.','입학해요','поступаю'),
+  W('신입생','sinipsaeng','первокурсник','study',1,'신입생 환영회에 갔어요.','Ходил на вечеринку для первокурсников.','신입생','первокурсников'),
+  W('동아리','dongari','студенческий клуб','study',1,'저는 사진 동아리에 들었어요.','Я вступил в фотоклуб.','동아리','фотоклуб'),
+  W('교양','gyoyang','общеобразовательный курс','study',2,'이번 학기에 교양 수업을 세 개 들어요.','В этом семестре беру три общеобразовательных курса.','교양 수업','общеобразовательных курса'),
+  W('시간표','siganpyo','расписание занятий','study',1,'시간표를 다시 짜야 해요.','Нужно заново составить расписание.','시간표','расписание'),
+  W('자퇴','jachwi','отчисление по собственной инициативе','study',2,'결국 자퇴를 결정했어요.','В итоге решил отчислиться.','자퇴','отчислиться'),
+  W('편입','pyeonip','перевод в другой вуз','study',2,'다른 학교로 편입했어요.','Перевёлся в другой университет.','편입했어요','Перевёлся'),
+  W('기숙사','gisuksa','общежитие','study',1,'기숙사에서 룸메이트랑 살아요.','Живу в общежитии с соседом по комнате.','기숙사','общежитии'),
+  W('등록금','deungrokgeum','плата за обучение','study',2,'등록금이 또 올랐어요.','Плата за обучение снова выросла.','등록금이 또 올랐어요','Плата за обучение снова выросла'),
+  W('장학생','janghaksaeng','стипендиат','study',2,'이번 학기 장학생으로 뽑혔어요.','В этом семестре меня выбрали стипендиатом.','장학생','стипендиатом'),
+  W('필수과목','pilsugwamok','обязательный курс','study',2,'그건 필수과목이라서 꼭 들어야 해요.','Это обязательный курс, поэтому его нужно прослушать.','필수과목','обязательный курс'),
+  W('선택과목','seontaekgwamok','курс по выбору','study',2,'선택과목은 마음대로 골라요.','Курсы по выбору можно выбирать свободно.','선택과목','Курсы по выбору'),
+  W('학사','haksa','степень бакалавра','study',2,'학사 학위를 받았어요.','Получил степень бакалавра.','학사 학위','степень бакалавра'),
+  W('석사','seoksa','магистратура, степень магистра','study',2,'석사 과정을 밟고 있어요.','Учусь в магистратуре.','석사 과정','магистратуре'),
+  W('박사','baksa','докторская степень, PhD','study',2,'박사 학위 논문을 쓰고 있어요.','Пишу докторскую диссертацию.','박사 학위 논문','докторскую диссертацию'),
+  W('조교','jogyo','ассистент преподавателя','study',1,'조교님께 질문했어요.','Задал вопрос ассистенту преподавателя.','조교','ассистенту преподавателя'),
+  W('강의실','gangsil','аудитория, лекционный зал','study',1,'강의실을 못 찾겠어요.','Не могу найти аудиторию.','강의실','аудиторию'),
+  W('리포트','ripoteu','реферат, отчёт','study',1,'리포트 마감이 내일이에요.','Дедлайн по реферату — завтра.','리포트','реферату'),
+  W('시험지','siheomji','экзаменационный лист','study',2,'시험지를 걷었어요.','Собрали листы с экзаменом.','시험지','листы с экзаменом'),
+  W('자습','jaseup','самостоятельные занятия','study',2,'방과 후에 자습을 해요.','После уроков занимаюсь самостоятельно.','자습','самостоятельно'),
+  W('학기','hakgi','семестр','study',1,'다음 학기에 교환학생을 가요.','В следующем семестре еду по обмену.','학기','семестре'),
+  W('지도교수','jidogyosu','научный руководитель','study',3,'지도교수님과 상담했어요.','Поговорил с научным руководителем.','지도교수','научным руководителем'),
+  W('계약','gyeyak','контракт','work',2,'계약을 체결했습니다.','Мы заключили контракт.','계약','контракт'),
+  W('보고서','bogoseo','отчёт','work',2,'보고서를 오늘까지 내야 해요.','Отчёт нужно сдать сегодня.','보고서','Отчёт'),
+  W('상사','sangsa','начальник','work',2,'상사에게 보고했어요.','Доложил начальнику.','상사','начальнику'),
+  W('재택근무','jaetaekgeunmu','удалённая работа','work',3,'일주일에 이틀 재택근무해요.','Два дня в неделю работаю удалённо.','재택근무','работаю удалённо'),
+  W('연봉','yeonbong','годовая зарплата','work',3,'연봉 협상이 잘 됐어요.','Переговоры о годовой зарплате прошли удачно.','연봉','годовой зарплате'),
+  W('실적','siljeok','показатели, результаты','work',3,'이번 분기 실적이 좋아요.','В этом квартале хорошие показатели.','실적','показатели'),
+  W('인턴','inteon','стажёр','work',2,'여름에 인턴을 했어요.','Летом стажировался.','인턴','стажировался'),
+  W('휴가','hyuga','отпуск','work',1,'다음 주에 휴가를 써요.','На следующей неделе беру отпуск.','휴가','отпуск'),
+  W('회의실','hoeuisil','переговорная','work',2,'회의실이 비었어요.','Переговорная свободна.','회의실','Переговорная'),
+  W('업무','eommu','рабочие задачи','work',2,'업무가 너무 많아요.','Слишком много рабочих задач.','업무','рабочих задач'),
+  W('명함','myeongham','визитная карточка','work',1,'명함 한 장 주시겠어요?','Могу я получить вашу визитку?','명함','визитку'),
+  W('사직서','sajikseo','заявление об увольнении','work',2,'사직서를 제출했어요.','Подал заявление об увольнении.','사직서','заявление об увольнении'),
+  W('퇴근','twigeun','уход с работы','work',1,'오늘은 일찍 퇴근했어요.','Сегодня я ушёл с работы пораньше.','퇴근했어요','ушёл с работы'),
+  W('출근','chulgeun','приход на работу','work',1,'매일 아침 8시에 출근해요.','Каждое утро иду на работу в 8.','출근해요','иду на работу'),
+  W('신입사원','sinipsawon','новый сотрудник','work',1,'신입사원 교육을 받았어요.','Проходил обучение как новый сотрудник.','신입사원','новый сотрудник'),
+  W('팀장','timjang','руководитель команды','work',1,'팀장님이 회의를 소집했어요.','Руководитель команды собрал совещание.','팀장님','Руководитель команды'),
+  W('부서','buseo','отдел, департамент','work',1,'다른 부서로 이동했어요.','Перешёл в другой отдел.','부서','отдел'),
+  W('사무실','samusil','офис, рабочий кабинет','work',1,'사무실이 좀 좁아요.','Офис немного тесноватый.','사무실','Офис'),
+  W('근무시간','geunmusigan','рабочие часы','work',1,'근무시간이 자유로운 편이에요.','Рабочие часы довольно свободные.','근무시간','Рабочие часы'),
+  W('초과근무','chogwageunmu','переработка сверх нормы','work',2,'요즘 초과근무가 너무 많아요.','Последнее время слишком много переработок сверх нормы.','초과근무','переработок сверх нормы'),
+  W('육아휴직','yugahyujik','декретный отпуск','work',2,'육아휴직을 신청했어요.','Подал заявление на декретный отпуск.','육아휴직','декретный отпуск'),
+  W('정규직','jeonggyujik','штатный сотрудник','work',2,'드디어 정규직이 됐어요.','Наконец стал штатным сотрудником.','정규직','штатным сотрудником'),
+  W('계약직','gyeyakjik','сотрудник по контракту','work',2,'지금은 계약직으로 일해요.','Сейчас работаю по контракту.','계약직','по контракту'),
+  W('프리랜서','peurillaenseo','фрилансер','work',1,'저는 프리랜서로 일해요.','Я работаю фрилансером.','프리랜서','фрилансером'),
+  W('동기','donggi','коллега того же набора','work',2,'입사 동기랑 친해졌어요.','Подружился с коллегой того же набора.','동기','коллегой того же набора'),
+  W('상여금','sangyeogeum','премия','work',2,'명절에 상여금을 받았어요.','На праздник получил премию.','상여금','премию'),
+  W('결재','gyeoljae','одобрение, подпись начальства','work',3,'부장님 결재를 받아야 해요.','Нужно получить одобрение начальника отдела.','결재','одобрение'),
+  W('스트레스','seuteureseu','стресс','work',1,'요즘 일 때문에 스트레스가 심해요.','Последнее время сильный стресс из-за работы.','스트레스','стресс'),
+  W('반차','bancha','отгул на полдня','work',2,'오늘 반차 냈어요.','Сегодня взял отгул на полдня.','반차 냈어요','взял отгул на полдня'),
+  W('은퇴','eunte','выход на пенсию','work',2,'내년에 은퇴할 계획이에요.','Планирую уйти на пенсию в следующем году.','은퇴할','уйти на пенсию'),
+  W('국물','gungmul','бульон','food',1,'국물이 시원해요.','Бульон освежающий.','국물','Бульон'),
+  W('후식','husik','десерт','food',2,'후식으로 과일을 먹었어요.','На десерт съели фрукты.','후식','десерт'),
+  W('간식','gansik','перекус','food',1,'간식으로 과자를 샀어요.','Купил печенье на перекус.','간식','перекус'),
+  W('젓가락','jeotgarak','палочки для еды','food',1,'젓가락질이 서툴러요.','Я неловко держу палочки.','젓가락','палочки'),
+  W('볶다','bokkda','жарить помешивая','food',2,'야채를 살짝 볶으세요.','Слегка обжарьте овощи.','볶','обжарьте'),
+  W('굽다','gupda','запекать, жарить','food',2,'고기를 숯불에 구웠어요.','Пожарили мясо на углях.','구웠','Пожарили'),
+  W('삶다','samda','варить','food',2,'계란을 삶았어요.','Сварил яйца.','삶았','Сварил'),
+  W('재료','jaeryo','ингредиенты','food',2,'재료가 신선해요.','Ингредиенты свежие.','재료','Ингредиенты'),
+  W('맛집','matjip','вкусное место','food',2,'여기 소문난 맛집이에요.','Это известное вкусное место.','맛집','вкусное место'),
+  W('배부르다','baebureuda','быть сытым','food',1,'너무 많이 먹어서 배불러요.','Съел слишком много, я сыт.','배불','сыт'),
+  W('야채','yachae','овощи','food',1,'야채를 많이 먹어야 해요.','Нужно есть много овощей.','야채','овощей'),
+  W('고기','gogi','мясо','food',1,'오늘은 고기를 구워 먹었어요.','Сегодня жарили и ели мясо.','고기','мясо'),
+  W('양념','yangnyeom','приправа, заправка','food',2,'양념이 딱 맞아요.','Заправка в самый раз.','양념','Заправка'),
+  W('매운맛','maeunmat','острый вкус','food',1,'저는 매운맛을 잘 못 먹어요.','Я плохо переношу острый вкус.','매운맛','острый вкус'),
+  W('짜다','jjada','быть солёным','food',1,'이 국이 좀 짜요.','Этот суп немного солёный.','짜요','солёный'),
+  W('달다','dalda','быть сладким','food',1,'이 케이크는 너무 달아요.','Этот торт слишком сладкий.','달아요','сладкий'),
+  W('시다','sida','быть кислым','food',2,'레몬이 너무 셔요.','Лимон слишком кислый.','셔요','кислый'),
+  W('쓰다','sseuda','быть горьким','food',2,'이 약은 정말 써요.','Это лекарство очень горькое.','써요','горькое'),
+  W('식당','sikdang','ресторан, столовая','food',1,'근처에 좋은 식당이 있어요.','Рядом есть хороший ресторан.','식당','ресторан'),
+  W('조리법','jorippeop','рецепт, способ приготовления','food',2,'조리법이 생각보다 간단해요.','Рецепт оказался проще, чем я думал.','조리법','Рецепт'),
+  W('뒷맛','dwitmat','послевкусие','food',3,'이 커피는 뒷맛이 좋아요.','У этого кофе приятное послевкусие.','뒷맛','послевкусие'),
+  W('편의점','pyeonuijeom','магазин у дома, круглосуточный магазин','food',1,'편의점에서 삼각김밥을 샀어요.','Купил онигири в круглосуточном магазине.','편의점','круглосуточном магазине'),
+  W('냉면','naengmyeon','холодная лапша','food',1,'여름엔 냉면이 최고예요.','Летом холодная лапша — это лучшее.','냉면','холодная лапша'),
+  W('곱창','gopchang','жареные говяжьи кишки','food',2,'곱창집에서 소주를 마셨어요.','Пили соджу в заведении с жареными кишками.','곱창집','заведении с жареными кишками'),
+  W('김치찌개','gimchijjigae','кимчи-чиге','food',1,'김치찌개가 매콤하고 맛있어요.','Кимчи-чиге острый и вкусный.','김치찌개','Кимчи-чиге'),
+  W('배달비','baedalbi','плата за доставку','food',2,'배달비가 계속 올라요.','Плата за доставку постоянно растёт.','배달비','Плата за доставку'),
+  W('유통기한','yutonggihan','срок годности','food',2,'유통기한이 지났어요.','Срок годности истёк.','유통기한','Срок годности'),
+  W('떡볶이','tteokbokki','токпокки, острые рисовые лепёшки','food',1,'매콤한 떡볶이가 먹고 싶어요.','Хочу острых токпокки.','떡볶이','токпокки'),
+  W('뷔페','bwipe','буфет, шведский стол','food',1,'생일에 뷔페에 갔어요.','На день рождения пошли в буфет с самообслуживанием.','뷔페','буфет с самообслуживанием'),
+  W('소스','soseu','соус','food',1,'소스를 더 뿌려 주세요.','Добавьте, пожалуйста, больше соуса.','소스','соуса'),
+  W('관광지','gwangwangji','достопримечательность','travel',2,'유명한 관광지에 갔어요.','Съездили к известной достопримечательности.','관광지','достопримечательности'),
+  W('지도','jido','карта','travel',1,'지도를 보고 찾아갔어요.','Нашёл по карте.','지도','карте'),
+  W('체크인','chekeuin','заселение','travel',2,'체크인은 세 시부터예요.','Заселение с трёх часов.','체크인','Заселение'),
+  W('배낭','baenang','рюкзак','travel',2,'배낭 하나만 들고 떠났어요.','Уехал с одним рюкзаком.','배낭','рюкзаком'),
+  W('시차','sicha','разница во времени','travel',3,'시차 때문에 잠이 안 와요.','Из-за разницы во времени не сплю.','시차','разницы во времени'),
+  W('항공사','hanggongsa','авиакомпания','travel',2,'항공사에 문의했어요.','Обратился в авиакомпанию.','항공사','авиакомпанию'),
+  W('비수기','bisugi','низкий сезон','travel',3,'비수기에는 표가 싸요.','В низкий сезон билеты дешевле.','비수기','низкий сезон'),
+  W('캐리어','kaerieo','чемодан','travel',1,'캐리어 바퀴가 고장 났어요.','У чемодана сломалось колесо.','캐리어','чемодана'),
+  W('출국','chulguk','выезд из страны','travel',3,'출국 두 시간 전에 도착했어요.','Приехал за два часа до вылета.','출국','вылета'),
+  W('입국심사','ipguksimsa','паспортный контроль','travel',3,'입국심사가 오래 걸렸어요.','Паспортный контроль занял много времени.','입국심사','Паспортный контроль'),
+  W('체크아웃','chekeuaut','выезд из отеля','travel',1,'체크아웃은 11시까지예요.','Выезд из отеля до 11 часов.','체크아웃','Выезд из отеля'),
+  W('렌터카','renteoka','арендованная машина','travel',1,'렌터카를 빌려서 여행했어요.','Путешествовали на арендованной машине.','렌터카','арендованной машине'),
+  W('국제선','gukjeseon','международный рейс','travel',2,'국제선 터미널로 가세요.','Идите в терминал международных рейсов.','국제선','международных рейсов'),
+  W('국내선','gungnaeseon','внутренний рейс','travel',2,'국내선은 훨씬 빨라요.','Внутренние рейсы намного быстрее.','국내선','Внутренние рейсы'),
+  W('결항','gyeolhang','отмена рейса','travel',3,'폭설로 항공편이 결항됐어요.','Из-за снегопада рейс отменили.','결항됐어요','рейс отменили'),
+  W('지연','jiyeon','задержка (рейса)','travel',2,'비행기가 두 시간 지연됐어요.','Самолёт задержали на два часа.','지연됐어요','задержали'),
+  W('관광','gwangwang','экскурсии, осмотр достопримечательностей','travel',1,'오늘은 관광만 할 거예요.','Сегодня будем только гулять по достопримечательностям.','관광','гулять по достопримечательностям'),
+  W('가이드','gaideu','гид','travel',1,'가이드가 설명을 잘 해줬어요.','Гид хорошо всё объяснил.','가이드','Гид'),
+  W('자유여행','jayuyeohaeng','самостоятельное путешествие','travel',2,'이번엔 자유여행으로 갈 거예요.','На этот раз поедем самостоятельным путешествием.','자유여행','самостоятельным путешествием'),
+  W('패키지여행','paekijiyeohaeng','тур с программой','travel',2,'패키지여행이 더 편해요.','Тур с гидом и программой удобнее.','패키지여행','Тур с гидом и программой'),
+  W('민박','minbak','гостевой дом','travel',2,'민박에서 하룻밤 잤어요.','Переночевали в гостевом доме.','민박','гостевом доме'),
+  W('야경','yagyeong','ночной вид города','travel',1,'여기 야경이 정말 예뻐요.','Здесь очень красивый вид ночного города.','야경','вид ночного города'),
+  W('여행자보험','yeohaengjaboheom','страховка путешественника','travel',3,'여행자보험을 미리 들었어요.','Заранее оформил страховку для путешественников.','여행자보험','страховку для путешественников'),
+  W('비자','bija','виза','travel',2,'비자를 신청해야 해요.','Нужно подать на визу.','비자','визу'),
+  W('세관','segwan','таможня','travel',2,'세관에서 짐을 검사했어요.','На таможне проверили багаж.','세관','таможне'),
+  W('면세점','myeonsejeom','магазин дьюти-фри','travel',1,'공항 면세점에서 향수를 샀어요.','Купил духи в дьюти-фри в аэропорту.','면세점','дьюти-фри'),
+  W('환율','hwanyul','курс валюты','travel',2,'요즘 환율이 많이 올랐어요.','Последнее время курс валюты сильно вырос.','환율','курс валюты'),
+  W('국립공원','gungripgongwon','национальный парк','travel',1,'국립공원에서 하이킹을 했어요.','Ходил в поход по национальному парку.','국립공원','национальному парку'),
+  W('현지인','hyeonjiin','местный житель','travel',2,'현지인에게 길을 물어봤어요.','Спросил дорогу у местного жителя.','현지인','местного жителя'),
+  W('배낭여행','baenangyeohaeng','путешествие с рюкзаком','travel',1,'대학생 때 배낭여행을 다녀왔어요.','В студенчестве ездил в путешествие с рюкзаком.','배낭여행','путешествие с рюкзаком'),
+  W('육교','yukgyo','надземный переход','city',3,'육교를 건너면 바로예요.','Перейдёте надземный переход — и сразу там.','육교','надземный переход'),
+  W('지름길','jireumgil','короткая дорога','city',2,'지름길로 가면 십 분이에요.','Короткой дорогой — десять минут.','지름길','Короткой дорогой'),
+  W('노선','noseon','маршрут, линия','city',2,'버스 노선이 바뀌었어요.','Маршрут автобуса изменили.','노선','Маршрут'),
+  W('요금','yogeum','плата за проезд','city',2,'택시 요금이 올랐어요.','Плата за такси выросла.','요금','Плата'),
+  W('보행자','bohaengja','пешеход','city',3,'보행자 신호를 지키세요.','Соблюдайте сигнал для пешеходов.','보행자','пешеходов'),
+  W('표지판','pyojipan','дорожный знак','city',2,'표지판을 못 봤어요.','Не заметил дорожный знак.','표지판','дорожный знак'),
+  W('대중교통','daejunggyotong','общественный транспорт','city',3,'대중교통이 잘 되어 있어요.','Общественный транспорт развит хорошо.','대중교통','Общественный транспорт'),
+  W('도착','dochak','прибытие','city',1,'열차 도착이 늦어져요.','Прибытие поезда задерживается.','도착','Прибытие'),
+  W('출발','chulbal','отправление','city',1,'출발 시간이 앞당겨졌어요.','Время отправления перенесли раньше.','출발','отправления'),
+  W('자전거도로','jajeongeodoro','велодорожка','city',3,'한강에 자전거도로가 좋아요.','На Ханган отличные велодорожки.','자전거도로','велодорожки'),
+  W('버스카드','beoseukadeu','транспортная карта','city',1,'버스카드를 충전해야 해요.','Нужно пополнить транспортную карту.','버스카드','транспортную карту'),
+  W('택시','taeksi','такси','city',1,'늦어서 택시를 탔어요.','Опоздал, поэтому взял такси.','택시','такси'),
+  W('심야버스','simyabeoseu','ночной автобус','city',2,'막차를 놓쳐서 심야버스를 탔어요.','Опоздал на последний автобус и поехал на ночном.','심야버스','ночном'),
+  W('첫차','cheotcha','первый рейс (транспорта)','city',2,'첫차를 타려고 일찍 나왔어요.','Вышел рано, чтобы успеть на первый рейс.','첫차','первый рейс'),
+  W('교차로','gyocharo','перекрёсток','city',2,'다음 교차로에서 우회전하세요.','На следующем перекрёстке поверните направо.','교차로','перекрёстке'),
+  W('일방통행','ilbangtonghaeng','одностороннее движение','city',2,'이 길은 일방통행이에요.','Эта дорога односторонняя.','일방통행','односторонняя'),
+  W('주차장','juchajang','автостоянка, парковка','city',1,'주차장이 꽉 찼어요.','Парковка была забита до отказа.','주차장','Парковка'),
+  W('지하도','jihado','подземный переход','city',1,'지하도를 통해서 건너갔어요.','Перешёл через подземный переход.','지하도','подземный переход'),
+  W('고속도로','gosokdoro','автомагистраль, трасса','city',1,'고속도로가 많이 막혀요.','На трассе большие пробки.','고속도로','На трассе'),
+  W('사거리','sageori','перекрёсток (четырёхсторонний)','city',1,'이 사거리에서 좌회전하면 돼요.','На этом перекрёстке нужно повернуть налево.','사거리','перекрёстке'),
+  W('좌회전','jwahoejeon','поворот налево','city',1,'여기서 좌회전해 주세요.','Поверните здесь налево, пожалуйста.','좌회전','налево'),
+  W('우회전','uhoejeon','поворот направо','city',1,'신호등에서 우회전하세요.','На светофоре поверните направо.','우회전','направо'),
+  W('유턴','yuteon','разворот','city',2,'여기서 유턴이 안 돼요.','Здесь нельзя делать разворот.','유턴','разворот'),
+  W('통행료','tonghaengryo','плата за проезд','city',2,'고속도로 통행료가 올랐어요.','Плата за проезд по трассе повысилась.','통행료','Плата за проезд'),
+  W('무단횡단','mudanhwaengdan','переход дороги в неположенном месте','city',2,'무단횡단은 위험해요.','Переходить дорогу в неположенном месте опасно.','무단횡단','Переходить дорогу в неположенном месте'),
+  W('안전벨트','anjeonbelteu','ремень безопасности','city',1,'안전벨트를 꼭 매세요.','Обязательно застегните ремень безопасности.','안전벨트','ремень безопасности'),
+  W('시내','sinae','центр города','city',1,'시내까지 얼마나 걸려요?','Сколько времени до центра города?','시내','центра города'),
+  W('외곽','oegwak','окраина','city',2,'외곽에 새 아파트가 많아요.','На окраине много новых квартир.','외곽','На окраине'),
+  W('개찰구','gaechalgu','турникет','city',2,'개찰구에서 카드를 찍었어요.','Приложил карту на турникете.','개찰구','турникете'),
+  W('환승역','hwanseungyeok','пересадочная станция','city',2,'이번 역이 환승역이에요.','Эта станция — пересадочная.','환승역','пересадочная'),
+  W('현금','hyeongeum','наличные','money',1,'현금은 안 받아요.','Наличные не принимаем.','현금','Наличные'),
+  W('이자','ija','проценты по вкладу','money',3,'이자가 거의 없어요.','Проценты почти нулевые.','이자','Проценты'),
+  W('예산','yesan','бюджет','money',3,'여행 예산을 짰어요.','Составил бюджет поездки.','예산','бюджет'),
+  W('사치','sachi','роскошь, излишество','money',3,'가끔은 사치도 필요해요.','Иногда нужна и роскошь.','사치','роскошь'),
+  W('절약','jeoryak','экономия','money',2,'전기를 절약하고 있어요.','Экономлю электричество.','절약','Экономлю'),
+  W('월세','wolse','ежемесячная аренда','money',2,'월세가 너무 비싸요.','Аренда слишком дорогая.','월세','Аренда'),
+  W('보증금','bojeunggeum','залог за жильё','money',3,'보증금을 돌려받았어요.','Мне вернули залог.','보증금','залог'),
+  W('수수료','susuryo','комиссия','money',3,'송금 수수료가 붙어요.','За перевод берут комиссию.','수수료','комиссию'),
+  W('투자','tuja','инвестиции','money',3,'주식에 투자했어요.','Вложился в акции.','투자','Вложился'),
+  W('카드결제','kadeugyeolje','оплата картой','money',2,'카드결제도 되나요?','Оплата картой возможна?','카드결제','Оплата картой'),
+  W('두통','dutong','головная боль','body',2,'두통이 심해서 약을 먹었어요.','Сильно болела голова, выпил таблетку.','두통','болела голова'),
+  W('소화','sohwa','пищеварение','body',2,'소화가 잘 안 돼요.','Плохо переваривается.','소화','переваривается'),
+  W('면역력','myeonyeongnyeok','иммунитет','body',3,'면역력이 떨어졌어요.','Иммунитет ослаб.','면역력','Иммунитет'),
+  W('근력','geullyeok','мышечная сила','body',3,'근력 운동을 시작했어요.','Начал силовые тренировки.','근력','силовые'),
+  W('유연성','yuyeonseong','гибкость','body',3,'요가로 유연성을 키웠어요.','Развил гибкость йогой.','유연성','гибкость'),
+  W('부상','busang','травма','body',3,'경기 중에 부상을 당했어요.','Получил травму во время матча.','부상','травму'),
+  W('회복','hoebok','восстановление','body',2,'회복이 빨라요.','Восстановление идёт быстро.','회복','Восстановление'),
+  W('자세','jase','осанка, поза','body',2,'앉는 자세가 나빠요.','У меня плохая осанка при сидении.','자세','осанка'),
+  W('체온','cheon','температура тела','body',2,'체온을 재 보세요.','Измерьте температуру.','체온','температуру'),
+  W('알레르기','allereugi','аллергия','body',2,'꽃가루 알레르기가 있어요.','У меня аллергия на пыльцу.','알레르기','аллергия'),
+  W('외롭다','oeropda','одиноко','emotion',2,'혼자 있으면 외로워요.','Одному одиноко.','외로','одиноко'),
+  W('그립다','geuripda','скучать по чему-то','emotion',3,'고향이 그리워요.','Скучаю по родным местам.','그리','Скучаю'),
+  W('후회','huhoe','сожаление','emotion',2,'그때 말 안 한 게 후회돼요.','Жалею, что тогда промолчал.','후회','Жалею'),
+  W('불안','buran','тревога','emotion',3,'시험 전에는 늘 불안해요.','Перед экзаменом всегда тревожно.','불안','тревожно'),
+  W('만족','manjok','удовлетворение','emotion',2,'결과에 만족해요.','Результатом доволен.','만족','доволен'),
+  W('자신감','jasingam','уверенность в себе','emotion',3,'발표 후 자신감이 생겼어요.','После выступления появилась уверенность.','자신감','уверенность'),
+  W('실망','silmang','разочарование','emotion',2,'기대가 커서 실망했어요.','Ожидал многого и разочаровался.','실망','разочаровался'),
+  W('감동','gamdong','растроганность','emotion',2,'편지를 읽고 감동했어요.','Прочитал письмо и растрогался.','감동','растрогался'),
+  W('여유','yeoyu','внутренний простор, неспешность','emotion',3,'주말엔 여유가 생겨요.','По выходным появляется неспешность.','여유','неспешность'),
+  W('짜릿하다','jjaritada','будоражащий','emotion',3,'역전승은 정말 짜릿해요.','Победа в конце — просто будоражит.','짜릿','будоражит'),
+  W('조건','jogeon','условие','abstract',2,'조건이 하나 있어요.','Есть одно условие.','조건','условие'),
+  W('관점','gwanjeom','точка зрения','abstract',3,'관점에 따라 달라요.','Зависит от точки зрения.','관점','точки зрения'),
+  W('태도','taedo','отношение, позиция','abstract',2,'태도가 중요해요.','Важно отношение.','태도','отношение'),
+  W('가치','gachi','ценность','abstract',3,'시간의 가치를 알게 됐어요.','Понял ценность времени.','가치','ценность'),
+  W('방법','bangbeop','способ','abstract',1,'더 좋은 방법이 있어요.','Есть способ получше.','방법','способ'),
+  W('상황','sanghwang','ситуация','abstract',2,'상황이 복잡해요.','Ситуация сложная.','상황','Ситуация'),
+  W('변화','byeonhwa','изменение','abstract',2,'큰 변화가 필요해요.','Нужны большие изменения.','변화','изменения'),
+  W('차이','chai','различие','abstract',2,'두 계획의 차이가 커요.','Разница между планами велика.','차이','Разница'),
+  W('특징','teukjing','особенность','abstract',3,'이 도시의 특징은 조용함이에요.','Особенность этого города — тишина.','특징','Особенность'),
+  W('관계','gwangye','связь, отношения','abstract',2,'둘 사이에 관계가 있어요.','Между ними есть связь.','관계','связь'),
+  W('알림','allim','уведомление','internet',1,'알림을 꺼 두었어요.','Отключил уведомления.','알림','уведомления'),
+  W('계정','gyejeong','аккаунт','internet',2,'계정을 새로 만들었어요.','Создал новый аккаунт.','계정','аккаунт'),
+  W('화면','hwamyeon','экран','internet',1,'화면이 너무 밝아요.','Экран слишком яркий.','화면','Экран'),
+  W('검색','geomsaek','поиск','internet',1,'인터넷에 검색해 봤어요.','Поискал в интернете.','검색','Поискал'),
+  W('업로드','eopnodeu','загрузка на сайт','internet',2,'영상을 업로드했어요.','Загрузил видео.','업로드','Загрузил'),
+  W('저장','jeojang','сохранение','internet',1,'파일을 저장했어요.','Сохранил файл.','저장','Сохранил'),
+  W('데이터','deiteo','мобильный трафик','internet',2,'데이터를 다 썼어요.','Потратил весь трафик.','데이터','трафик'),
+  W('앱','aep','приложение','internet',1,'새 앱을 깔았어요.','Установил новое приложение.','앱','приложение'),
+  W('화상통화','hwasangtonghwa','видеозвонок','internet',3,'가족과 화상통화를 해요.','Созваниваюсь с семьёй по видео.','화상통화','по видео'),
+  W('온라인수업','onrainsueop','онлайн-занятие','internet',2,'온라인수업이 편해요.','Онлайн-занятия удобны.','온라인수업','Онлайн-занятия'),
+  W('추석','chuseok','Чхусок','korea',2,'추석에 송편을 만들어요.','На Чхусок делают сонпхён.','추석','Чхусок'),
+  W('떡국','tteokguk','суп с рисовыми хлебцами','korea',2,'설날에 떡국을 먹어요.','На Новый год едят суп с рисовыми хлебцами.','떡국','суп с рисовыми хлебцами'),
+  W('삼겹살','samgyeopsal','самгёпсаль','korea',1,'금요일엔 삼겹살을 구워요.','По пятницам жарим самгёпсаль.','삼겹살','самгёпсаль'),
+  W('노래방','noraebang','караоке','korea',1,'회식 후에 노래방에 갔어요.','После ужина пошли в караоке.','노래방','караоке'),
+  W('한글날','hangeullal','День хангыля','korea',3,'한글날은 공휴일이에요.','День хангыля — выходной.','한글날','День хангыля'),
+  W('태권도','taegwondo','тхэквондо','korea',1,'어릴 때 태권도를 배웠어요.','В детстве занимался тхэквондо.','태권도','тхэквондо'),
+  W('온돌','ondol','тёплый пол ондоль','korea',3,'겨울엔 온돌이 최고예요.','Зимой тёплый пол — лучшее.','온돌','тёплый пол'),
+  W('시장','sijang','рынок','korea',1,'전통 시장에서 장을 봤어요.','Закупились на традиционном рынке.','시장','рынке'),
+  W('궁궐','gunggwol','дворец','korea',3,'경복궁은 조선의 궁궐이에요.','Кёнбоккун — дворец эпохи Чосон.','궁궐','дворец'),
+  W('세배','sebae','новогодний поклон','korea',3,'할머니께 세배를 드렸어요.','Поклонился бабушке по-новогоднему.','세배','Поклонился'),
+  W('아싸','assa','не в тусовке','slang',3,'저는 학교에서 아싸예요.','В университете я вне тусовки.','아싸','вне тусовки'),
+  W('존버','jonbeo','упрямо терпеть и ждать','slang',3,'주식은 존버가 답이래요.','Говорят, с акциями надо просто терпеть.','존버','терпеть'),
+  W('소확행','sohwakhaeng','маленькое верное счастье','slang',3,'따뜻한 커피가 제 소확행이에요.','Тёплый кофе — моё маленькое счастье.','소확행','маленькое счастье'),
+  W('워라밸','worabael','баланс работы и жизни','slang',3,'워라밸이 중요해요.','Важен баланс работы и жизни.','워라밸','баланс работы и жизни'),
+  W('갑질','gapjil','злоупотребление положением','slang',3,'갑질 문제가 심각해요.','Проблема злоупотребления положением серьёзна.','갑질','злоупотребления положением'),
+  W('낚이다','nakkida','повестись на обман','slang',3,'가짜 뉴스에 낚였어요.','Повёлся на фейковую новость.','낚였','Повёлся'),
+  W('눈팅','nunting','читать, не комментируя','slang',3,'저는 그냥 눈팅만 해요.','Я просто читаю и не пишу.','눈팅','читаю и не пишу'),
+  W('치맥','chimaek','курица с пивом','slang',1,'오늘 저녁은 치맥이야.','Сегодня вечером курица с пивом.','치맥','курица с пивом'),
+  W('썰','sseol','байка, история','slang',3,'재미있는 썰 하나 풀게.','Расскажу одну забавную байку.','썰','байку'),
+  W('불금','bulgeum','огненная пятница','slang',2,'오늘은 불금이야!','Сегодня огненная пятница!','불금','огненная пятница'),
+  W('착각','chakgak','заблуждение, путаница','awkward',2,'다른 사람으로 착각했어요.','Перепутал с другим человеком.','착각','Перепутал'),
+  W('실언','sireon','обмолвка','awkward',3,'회의에서 실언을 했어요.','На совещании сказал лишнее.','실언','сказал лишнее'),
+  W('창피하다','changpihada','стыдно','awkward',2,'넘어져서 너무 창피했어요.','Упал — было ужасно стыдно.','창피','стыдно'),
+  W('어색하다','eosaekhada','неловко, натянуто','awkward',3,'첫 만남은 좀 어색했어요.','Первая встреча была натянутой.','어색','натянутой'),
+  W('딴짓','ttanjit','заниматься не тем','awkward',3,'수업 중에 딴짓했어요.','На уроке занимался не тем.','딴짓','занимался не тем'),
+  W('졸다','jolda','клевать носом','awkward',2,'강의 중에 졸았어요.','На лекции клевал носом.','졸았','клевал носом'),
+  W('늦잠','neutjam','проспать','awkward',1,'늦잠을 자서 지각했어요.','Проспал и опоздал.','늦잠','Проспал'),
+  W('헛소리','heotsori','чепуха','awkward',3,'취해서 헛소리를 했어요.','Выпил и нёс чепуху.','헛소리','чепуху'),
+  W('진땀','jinttam','холодный пот от волнения','awkward',3,'발표하다 진땀을 뺐어요.','Во время доклада прошиб холодный пот.','진땀','холодный пот'),
+  W('눈물','nunmul','слёзы','awkward',1,'영화를 보고 눈물이 났어요.','От фильма навернулись слёзы.','눈물','слёзы'),
+  W('관객','gwangaek','зрители','fun',2,'관객이 가득 찼어요.','Зал был полон зрителей.','관객','зрителей'),
+  W('팬미팅','paenmiting','фан-встреча','fun',2,'팬미팅에 당첨됐어요.','Выиграл место на фан-встрече.','팬미팅','фан-встрече'),
+  W('티켓팅','tiketing','битва за билеты','fun',3,'티켓팅에 실패했어요.','Не успел урвать билет.','티켓팅','урвать билет'),
+  W('주인공','juingong','главный герой','fun',2,'주인공이 매력적이에요.','Главный герой обаятельный.','주인공','Главный герой'),
+  W('자막','jamak','субтитры','fun',1,'자막 없이 봤어요.','Смотрел без субтитров.','자막','субтитров'),
+  W('개봉','gaebong','премьера фильма','fun',2,'다음 주에 개봉해요.','Премьера на следующей неделе.','개봉','Премьера'),
+  W('촬영','chwaryeong','съёмки','fun',2,'촬영이 한 달 걸렸어요.','Съёмки заняли месяц.','촬영','Съёмки'),
+  W('오디션','odisyeon','прослушивание','fun',2,'오디션에 합격했어요.','Прошёл прослушивание.','오디션','прослушивание'),
+  W('순위','sunwi','рейтинг, место','fun',2,'차트 순위가 올랐어요.','Позиция в чарте поднялась.','순위','Позиция'),
+  W('응원봉','eungwonbong','светящаяся палочка фаната','fun',3,'응원봉을 들고 갔어요.','Пошёл со светящейся палочкой.','응원봉','светящейся палочкой'),
+  W('개념','gaenyeom','понятие','hardcore',3,'개념부터 정리합시다.','Давайте начнём с понятий.','개념','понятий'),
+  W('논리','nolli','логика','hardcore',3,'논리가 부족해요.','Логики не хватает.','논리','Логики'),
+  W('전제','jeonje','предпосылка','hardcore',3,'그 전제가 틀렸어요.','Эта предпосылка неверна.','전제','предпосылка'),
+  W('근거','geungeo','основание, довод','hardcore',3,'근거를 제시하세요.','Приведите основания.','근거','основания'),
+  W('비판','bipan','критика','hardcore',3,'건설적인 비판이 필요해요.','Нужна конструктивная критика.','비판','критика'),
+  W('통찰','tongchal','прозрение, инсайт','hardcore',3,'날카로운 통찰이었어요.','Это было острое прозрение.','통찰','прозрение'),
+  W('모호하다','mohohada','неоднозначный','hardcore',3,'표현이 모호해요.','Формулировка неоднозначная.','모호','неоднозначная'),
+  W('상충','sangchung','конфликт интересов','hardcore',3,'두 목표가 상충해요.','Две цели противоречат друг другу.','상충','противоречат'),
+  W('함축','hamchuk','подтекст','hardcore',3,'그 말에는 함축이 있어요.','В этих словах есть подтекст.','함축','подтекст'),
+  W('보편적','bopyeonjeok','всеобщий','hardcore',3,'보편적인 가치예요.','Это всеобщая ценность.','보편적','всеобщая'),
+  W('병원','byeongwon','больница','topik1',1,'아파서 병원에 갔어요.','Заболел и пошёл в больницу.','병원','больницу'),
+  W('우체국','ucheguk','почта','topik1',1,'우체국에서 소포를 보냈어요.','Отправил посылку на почте.','우체국','почте'),
+  W('방학','banghak','каникулы','topik1',1,'방학에 여행을 가요.','На каникулах еду в путешествие.','방학','каникулах'),
+  W('주말','jumal','выходные','topik1',1,'주말에 뭐 해요?','Что делаете на выходных?','주말','выходных'),
+  W('계산하다','gyesanhada','оплачивать, считать','topik1',1,'제가 계산할게요.','Я оплачу.','계산','оплачу'),
+  W('만나다','mannada','встречаться','topik1',1,'내일 친구를 만나요.','Завтра встречаюсь с другом.','만나','встречаюсь'),
+  W('배우다','baeuda','учиться чему-то','topik1',1,'한국어를 배워요.','Учу корейский.','배워','Учу'),
+  W('청소하다','cheongsohada','убираться','topik1',1,'방을 청소했어요.','Убрался в комнате.','청소','Убрался'),
+  W('기다리다','gidarida','ждать','topik1',1,'버스를 기다려요.','Жду автобус.','기다려','Жду'),
+  W('물어보다','mureoboda','спрашивать','topik1',1,'길을 물어봤어요.','Спросил дорогу.','물어','Спросил'),
+  W('실시하다','silsihada','проводить (мероприятие)','topik2',3,'설문을 실시했습니다.','Провели опрос.','실시','Провели'),
+  W('도입하다','doiphada','вводить, внедрять','topik2',3,'새 기술을 도입했다.','Внедрили новую технологию.','도입','Внедрили'),
+  W('유지하다','yujihada','поддерживать состояние','topik2',3,'건강을 유지해야 한다.','Надо поддерживать здоровье.','유지','поддерживать'),
+  W('확대하다','hwakdaehada','расширять','topik2',3,'지원을 확대할 계획이다.','Планируют расширить поддержку.','확대','расширить'),
+  W('인식','insik','восприятие, осознание','topik2',3,'문제에 대한 인식이 낮다.','Осознание проблемы низкое.','인식','Осознание'),
+  W('지원','jiwon','поддержка, помощь','topik2',2,'정부의 지원이 필요하다.','Нужна государственная поддержка.','지원','поддержка'),
+  W('대책','daechaek','меры, контрмеры','topik2',3,'구체적인 대책이 없다.','Конкретных мер нет.','대책','мер'),
+  W('효율','hyoyul','эффективность','topik2',3,'업무 효율이 높아졌다.','Эффективность работы выросла.','효율','Эффективность'),
+  W('격차','gyeokcha','разрыв, неравенство','topik2',3,'소득 격차가 커지고 있다.','Разрыв в доходах растёт.','격차','Разрыв'),
+  W('지속적','jisokjeok','устойчивый, постоянный','topik2',3,'지속적인 노력이 필요하다.','Нужны постоянные усилия.','지속적','постоянные'),
+);
+
+const CLEAN_WORDS = WORDS.filter(w=>w.topic!=='adult');
+const hourWord=(t)=>{ const h=Math.floor(t/3600000); const x=Math.abs((h*2654435761)%4294967296); return CLEAN_WORDS[x%CLEAN_WORDS.length]||WORDS[0]; };
+const PKEY='alias.progress.v1';
+const loadProg=()=>{ try{ const r=JSON.parse(localStorage.getItem(PKEY)||'null'); if(r&&r.words) return {words:r.words||{},days:r.days||[]}; }catch(e){} return {words:{},days:[]}; };
+const dayKey=(d)=>{ const z=new Date(d.getTime()-d.getTimezoneOffset()*60000); return z.toISOString().slice(0,10); };
+const streakOf=(days)=>{ const set=new Set(days||[]); const d=new Date(); if(!set.has(dayKey(d))) d.setDate(d.getDate()-1); let n=0; while(set.has(dayKey(d))){ n++; d.setDate(d.getDate()-1); } return n; };
+const mastery=(w)=>Math.max(0,Math.min(3,(w.ok||0)-(w.miss||0)));
+const ygLink=(ko)=>`https://youglish.com/pronounce/${encodeURIComponent(ko)}/korean`;
+const LEVELS = [{id:'all',label:'Все'},{id:'1',label:'초급 · базовый'},{id:'2',label:'중급'},{id:'3',label:'고급'}];
+const RULES = [
+  {id:'free',title:'Свободно',hint:'Нельзя только само слово и однокоренные'},
+  {id:'target',title:'Только на языке цели',hint:'Объясняем на том языке, на котором загадано слово'},
+  {id:'nolit',title:'Без перевода',hint:'Нельзя произносить перевод — только описание'},
+];
+const IDOLS=[
+  {name:'Чимин',ko:'지민'},{name:'Розэ',ko:'로제'},{name:'Карина',ko:'카리나'},{name:'Хёнджин',ko:'현진'},
+  {name:'Джису',ko:'지수'},{name:'Тэян',ko:'태양'},{name:'Вонён',ko:'원영'},{name:'Минхо',ko:'민호'},
+  {name:'Юна',ko:'유나'},{name:'Соён',ko:'소연'},{name:'Джехён',ko:'재현'},{name:'Хани',ko:'하니'},
+  {name:'Соби',ko:'수빈'},{name:'Чэвон',ko:'채원'},{name:'Юнги',ko:'윤기'},{name:'Гахён',ko:'가현'},
+];
+const TEAM_COLORS=['#C9F24A','#FF5C3E','#6C8CFF','#FFC24A','#A77BFF','#4FE0C4'];
+const pickIdols=(n,used=[])=>{
+  const pool=IDOLS.filter(i=>!used.includes(i.name));
+  const out=[];
+  for(let k=0;k<n&&pool.length;k++) out.push(pool.splice(Math.floor(Math.random()*pool.length),1)[0]);
+  return out;
+};
+const plural=(n,forms)=>{const m=n%100,k=n%10;return `${n} ${m>=11&&m<=14?forms[2]:k===1?forms[0]:k>=2&&k<=4?forms[1]:forms[2]}`;};
+const WORD_FORMS=['слово','слова','слов'];
+const pform=(n,forms)=>{const m=n%100,k=n%10;return m>=11&&m<=14?forms[2]:k===1?forms[0]:k>=2&&k<=4?forms[1]:forms[2];};
+const countIn=id=>WORDS.filter(w=>w.topic===id).length;
+const LIME='#C9F24A', CORAL='#FF5C3E', BLUE='#6C8CFF', GOLD='#FFC24A';
+const chip=(on,c)=>`flex:none;border-radius:100px;padding:8px 13px;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap;${on?`background:${c};color:#12100A`:'background:rgba(246,239,228,.07);color:rgba(246,239,228,.6)'}`;
+
+class Component extends DCLogic {
+  state = {
+    screen:'home', selected:['emotion','food','city'], adult:false, level:'all',
+    teams:pickIdols(2).map((it,i)=>({name:`Команда ${it.name}`,ko:it.ko,idol:it.name,color:TEAM_COLORS[i],players:3,dir:i===0?'ru':'ko'})),
+    duration:60, rule:'free', activeTeam:0, roundNo:1, goal:20,
+    timeLeft:60, running:true, cardIdx:0, revealed:false, deck:[], winner:null,
+    results:[], scores:[0,0], dictFilter:'all', expanded:null, timeUp:false,
+    quiz:[], qIdx:0, qPick:null, qScore:0, qStreak:0, qMistakes:[],
+    prog:loadProg(), clock:Date.now(), storyIdx:0,
+    repeatQueue:[], repeatFlipped:false, repeatCleared:0,
+  };
+
+  saveProg(p){ try{ localStorage.setItem(PKEY, JSON.stringify(p)); }catch(e){} }
+  record(w, ok, undoOk){
+    if(!w||!w.ko) return;
+    const prev=this.state.prog, words={...prev.words};
+    const e={ok:0,miss:0,...(words[w.ko]||{}),ko:w.ko,ru:w.ru,roman:w.roman,topic:w.topic,exKo:w.exKo,exRu:w.exRu};
+    if(undoOk===true) e.ok=Math.max(0,e.ok-1);
+    if(undoOk===false) e.miss=Math.max(0,e.miss-1);
+    if(ok) e.ok++; else e.miss++;
+    e.ts=Date.now();
+    words[w.ko]=e;
+    const today=dayKey(new Date());
+    const days=(prev.days||[]).includes(today)?prev.days:[...(prev.days||[]),today].slice(-400);
+    const p={words,days};
+    this.setState({prog:p}); this.saveProg(p);
+  }
+  stats(){
+    const w=Object.values(this.state.prog.words||{});
+    const ok=w.reduce((a,x)=>a+(x.ok||0),0), miss=w.reduce((a,x)=>a+(x.miss||0),0);
+    return {words:w, total:w.length, ok, miss,
+      repeat:w.filter(x=>(x.miss||0)>0&&mastery(x)<2),
+      strong:w.filter(x=>mastery(x)>=2),
+      rate:(ok+miss)?Math.round(100*ok/(ok+miss)):0,
+      streak:streakOf(this.state.prog.days)};
+  }
+
+  buildDeck(){
+    const sel=[...this.state.selected, ...(this.state.adult?['adult']:[])];
+    let pool=WORDS.filter(w=>sel.includes(w.topic));
+    if(this.state.level!=='all') { const f=pool.filter(w=>String(w.lvl)===this.state.level); if(f.length>6) pool=f; }
+    if(pool.length<6) pool=WORDS;
+    const d=[...pool];
+    for(let i=d.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [d[i],d[j]]=[d[j],d[i]]; }
+    return d;
+  }
+  parts(text,hi){
+    if(!hi) return [{text,style:''}];
+    let i=text.indexOf(hi);
+    if(i<0){ // fallback: match the word stem, ignoring inflection
+      const stem=hi.slice(0,Math.max(4,Math.ceil(hi.length*0.6)));
+      const m=text.toLowerCase().indexOf(stem.toLowerCase());
+      if(m<0){ if(typeof console!=='undefined') console.warn('[alias] нет подсветки:',hi,'→',text); return [{text,style:''}]; }
+      const end=text.indexOf(' ',m); const cut=end<0?text.length:end;
+      hi=text.slice(m,cut).replace(/[.,!?]$/,''); i=m;
+    }
+    return [{text:text.slice(0,i),style:''},
+      {text:hi,style:'color:#C8451F;background:rgba(255,92,62,.16);border-radius:5px;padding:0 3px;font-weight:900'},
+      {text:text.slice(i+hi.length),style:''}].filter(p=>p.text!=='');
+  }
+
+  componentDidMount(){
+    this.last=Date.now();
+    this.timer=setInterval(()=>{
+      const now=Date.now(), dt=Math.round((now-this.last)/1000);
+      if(Math.floor(now/60000)!==Math.floor(this.state.clock/60000)) this.setState({clock:now});
+      if(dt<1) return;
+      this.last=now;
+      if(this.state.screen!=='game'||!this.state.running) return;
+      this.setState(s=>{
+        const nt=s.timeLeft-dt;
+        return nt<=0?{timeLeft:0,running:false,timeUp:true}:{timeLeft:nt};
+      });
+    },250);
+  }
+  componentWillUnmount(){ clearInterval(this.timer); }
+
+  go=(screen)=>()=>this.setState({screen});
+  deck(){ return this.state.deck.length?this.state.deck:WORDS; }
+
+  buildQuiz(){
+    const sel=this.state.selected;
+    let base=WORDS.filter(w=>w.topic!=='adult'||this.state.adult);
+    const inSel=base.filter(w=>sel.includes(w.topic));
+    if(inSel.length>=10) base=inSel;
+    const shuffled=[...base].sort(()=>Math.random()-0.5).slice(0,10);
+    return shuffled.map(w=>{
+      const sameTopic=base.filter(x=>x.topic===w.topic&&x.ko!==w.ko);
+      const others=base.filter(x=>x.ko!==w.ko);
+      const pool=[...sameTopic.sort(()=>Math.random()-0.5).slice(0,2),
+                  ...others.sort(()=>Math.random()-0.5)];
+      const seenRu=new Set([w.ru]), seenKo=new Set([w.ko]); const distract=[];
+      for(const c of pool){ if(distract.length>=3) break;
+        if(seenRu.has(c.ru)||seenKo.has(c.ko)) continue;
+        seenRu.add(c.ru); seenKo.add(c.ko); distract.push(c); }
+      const dir=Math.random()<0.65?'ko':'ru';
+      const opts=[w,...distract].sort(()=>Math.random()-0.5);
+      return {w,dir,opts,answer:opts.findIndex(o=>o.ko===w.ko)};
+    });
+  }
+  startQuiz=()=>this.setState({screen:'solo',quiz:this.buildQuiz(),qIdx:0,qPick:null,qScore:0,qStreak:0,qMistakes:[]});
+  card(){ const d=this.deck(); return d[this.state.cardIdx%d.length]; }
+  startRepeat=()=>{
+    const queue=this.stats().repeat.map(w=>({...w,dir:Math.random()<0.5?'ko':'ru'}));
+    if(queue.length===0){ this.setState({screen:'dict'}); return; }
+    this.setState({screen:'repeat',repeatQueue:queue,repeatFlipped:false,repeatCleared:0});
+  };
+  flipRepeat=()=>this.setState(st=>({repeatFlipped:!st.repeatFlipped}));
+  repeatAnswer=(ok)=>{
+    const cur=this.state.repeatQueue[0];
+    if(!cur) return;
+    this.record(cur,ok);
+    this.setState(st=>{
+      const rest=st.repeatQueue.slice(1);
+      const next= ok ? rest : [...rest,cur];
+      const cleared= ok ? st.repeatCleared+1 : st.repeatCleared;
+      if(next.length===0) return {repeatQueue:[],repeatFlipped:false,repeatCleared:cleared,screen:'repeatDone'};
+      return {repeatQueue:next,repeatFlipped:false,repeatCleared:cleared};
+    });
+  };
+  exitRepeat=()=>this.setState({screen:'dict'});
+  team(){ return this.state.teams[this.state.activeTeam%this.state.teams.length]; }
+
+  advance=(ok)=>{
+    const w=this.card();
+    this.record(w,ok);
+    const out = this.state.timeUp || this.state.cardIdx+1 >= this.deck().length;
+    this.setState(s=>({
+      results:[...s.results,{...w,ok}],
+      cardIdx:s.cardIdx+1, revealed:false,
+      screen: out ? 'roundEnd' : s.screen, running: out ? false : s.running,
+      timeLeft: ok? s.timeLeft : Math.max(1,s.timeLeft),
+      storyIdx: out ? 0 : s.storyIdx,
+    }));
+  };
+  onStoriesScroll=(e)=>{
+    const el=e.target, w=el.clientWidth||1, idx=Math.round(el.scrollLeft/w);
+    if(idx!==this.state.storyIdx) this.setState({storyIdx:idx});
+  };
+
+  quizVals(accent){
+    const s=this.state;
+    const q=s.quiz[s.qIdx]||null;
+    if(!q) return {quizDots:[],quizOptions:[],quizExKoParts:[],quizMistakes:s.qMistakes,
+      quizScore:s.qScore,quizXp:s.qScore*12,quizStreak:s.qStreak,
+      quizResultTitle:s.qScore>=8?'Отличный заход':s.qScore>=5?'Неплохо для разминки':'Есть что повторить',
+      quizWord:'',quizRoman:'',quizPrompt:'',quizWordStyle:'',quizExStyle:'display:none',quizExRu:'',
+      quizVideoStyle:'display:none',quizVideoLink:'',quizVideoWord:'',
+      quizNextLabel:'',quizNextStyle:'display:none'};
+    const answered=s.qPick!==null, correct=q.answer;
+    const askKo=q.dir==='ko';
+    return {
+      quizDots:s.quiz.map((_,i)=>({style:`flex:1;height:4px;border-radius:100px;background:${i<s.qIdx?accent:i===s.qIdx?'rgba(246,239,228,.55)':'rgba(246,239,228,.14)'}`})),
+      quizStreak:s.qStreak, quizStreakStyle:s.qStreak>=2?'display:flex;align-items:center;gap:5px;background:rgba(255,92,62,.14);border-radius:100px;padding:5px 10px':'display:none',
+      quizPrompt:askKo?'ЧТО ЗНАЧИТ ЭТО СЛОВО?':'КАК ЭТО ПО-КОРЕЙСКИ?',
+      quizWord:askKo?q.w.ko:q.w.ru,
+      quizWordStyle:askKo
+        ? "font-family:'Noto Sans KR',sans-serif;font-weight:900;font-size:46px;line-height:1.05;letter-spacing:-.02em"
+        : 'font-family:Unbounded,sans-serif;font-weight:800;font-size:26px;line-height:1.2;letter-spacing:-.03em;text-wrap:balance',
+      quizRoman:askKo?q.w.roman:'',
+      quizOptions:q.opts.map((o,i)=>{
+        const isRight=i===correct, picked=s.qPick===i;
+        let bg='rgba(246,239,228,.05)', bd='rgba(246,239,228,.1)', fg='#F6EFE4', mark='';
+        if(answered&&isRight){ bg='rgba(201,242,74,.14)'; bd='rgba(201,242,74,.5)'; fg=accent; mark='✓'; }
+        else if(answered&&picked){ bg='rgba(255,92,62,.12)'; bd='rgba(255,92,62,.45)'; fg='#FF8C74'; mark='✕'; }
+        else if(answered){ fg='rgba(246,239,228,.35)'; }
+        return {
+          label:askKo?o.ru:o.ko,
+          style:`display:flex;align-items:center;gap:10px;border-radius:17px;padding:15px 16px;cursor:${answered?'default':'pointer'};background:${bg};border:1px solid ${bd};transition:all .15s`,
+          textStyle:askKo
+            ? `font-size:14.5px;font-weight:700;color:${fg};text-wrap:pretty`
+            : `font-family:'Noto Sans KR',sans-serif;font-size:19px;font-weight:800;color:${fg}`,
+          markStyle:`color:${fg}`, mark,
+          pick:()=>{ if(this.state.qPick!==null) return;
+            const ok=i===correct;
+            this.record(q.w,ok);
+            this.setState(st=>({qPick:i,qScore:st.qScore+(ok?1:0),qStreak:ok?st.qStreak+1:0,
+              qMistakes:ok?st.qMistakes:[...st.qMistakes,{ko:q.w.ko,ru:q.w.ru}]}));
+          },
+        };
+      }),
+      quizExStyle:answered?'margin-top:16px;background:rgba(246,239,228,.05);border-radius:18px;padding:14px 15px':'display:none',
+      quizExKoParts:answered?this.parts(q.w.exKo,q.w.hiKo).map(p=>({text:p.text,style:p.style?'color:#C9F24A;font-weight:900':''})):[],
+      quizExRu:answered?q.w.exRu:'',
+      quizVideoStyle:answered?'margin-top:12px':'display:none',
+      quizVideoLink:answered?ygLink(q.w.ko):'',
+      quizVideoWord:answered?q.w.ko:'',
+      quizNextLabel:s.qIdx===s.quiz.length-1?'Показать результат':'Дальше →',
+      quizNextStyle:answered
+        ? `background:${accent};color:#12100A;border-radius:19px;padding:16px;text-align:center;font-family:Unbounded,sans-serif;font-weight:800;font-size:15.5px;cursor:pointer`
+        : 'background:rgba(246,239,228,.06);color:rgba(246,239,228,.3);border-radius:19px;padding:16px;text-align:center;font-family:Unbounded,sans-serif;font-weight:800;font-size:15.5px',
+      quizNext:()=>{ if(this.state.qPick===null) return;
+        this.setState(st=>st.qIdx===st.quiz.length-1?{screen:'soloDone'}:{qIdx:st.qIdx+1,qPick:null});
+      },
+      quizScore:s.qScore, quizXp:s.qScore*12, quizMistakes:s.qMistakes,
+      quizResultTitle:s.qScore>=8?'Отличный заход':s.qScore>=5?'Неплохо для разминки':'Есть что повторить',
+    };
+  }
+
+  renderVals(){
+    const s=this.state, accent=this.props.accent??LIME;
+    const scr=s.screen, t=this.team(), card=this.card();
+    const P=this.stats();
+    const wotd=hourWord(s.clock);
+    const hardest=P.words.slice().sort((a,b)=>(b.miss||0)-(a.miss||0)||(b.ts||0)-(a.ts||0)).find(w=>(w.miss||0)>0)||null;
+    const minsLeft=60-new Date(s.clock).getMinutes();
+    const dirLabel = d => d==='ru' ? 'по-русски → 한국어' : '한국어로 → по-русски';
+    const roundScore = s.results.filter(r=>r.ok).length;
+
+    const topicCards = [...TOPICS].map(tp=>{
+      const on=s.selected.includes(tp.id);
+      return {...tp, count:plural(countIn(tp.id),WORD_FORMS),
+        style:`position:relative;border-radius:17px;padding:14px 13px 12px;cursor:pointer;overflow:hidden;border:1px solid ${on?'rgba(201,242,74,.45)':'rgba(246,239,228,.09)'};background:${on?'rgba(201,242,74,.11)':'rgba(246,239,228,.04)'}`,
+        koStyle:`color:${on?LIME:'rgba(246,239,228,.85)'}`,
+        markStyle:`color:${on?LIME:'rgba(246,239,228,.2)'}`,
+        mark:on?'✓':'+',
+        toggle:()=>this.setState(st=>({selected: st.selected.includes(tp.id)? st.selected.filter(x=>x!==tp.id) : [...st.selected,tp.id]})),
+      };
+    });
+
+    let dictList=P.words.slice().sort((a,b)=>(b.ts||0)-(a.ts||0));
+    if(s.dictFilter==='weak') dictList=dictList.filter(w=>(w.miss||0)>0&&mastery(w)<2);
+    if(s.dictFilter==='new') dictList=dictList.filter(w=>(w.ok||0)+(w.miss||0)<=1);
+
+    const byTopic={};
+    P.words.forEach(w=>{ (byTopic[w.topic]=byTopic[w.topic]||[]).push(w); });
+    const progressRows=Object.keys(byTopic).map(id=>{
+      const tp=TOPICS.find(x=>x.id===id)||{ko:'기타',ru:'Прочее'};
+      const pct=Math.min(100,Math.round(100*byTopic[id].length/Math.max(1,countIn(id))));
+      return {ko:tp.ko,ru:tp.ru,pct,label:`${pct}%`,
+        barStyle:`height:100%;width:${Math.max(3,pct)}%;border-radius:100px;background:${pct>60?LIME:pct>30?GOLD:CORAL}`};
+    }).sort((a,b)=>b.pct-a.pct).slice(0,8);
+
+    const repeatCur=s.repeatQueue[0]||null;
+    const seenStory=new Set();
+    const storyCards=s.results.filter(r=>{ if(seenStory.has(r.ko)) return false; seenStory.add(r.ko); return true; })
+      .map(r=>({ko:r.ko,ru:r.ru,link:ygLink(r.ko)}));
+
+    return {
+      isHome:scr==='home', isTopics:scr==='topics', isTeams:scr==='teams', isGame:scr==='game',
+      isRoundEnd:scr==='roundEnd', isScore:scr==='score', isDict:scr==='dict', isProfile:scr==='profile',
+      showTabs:['home','dict','profile'].includes(scr),
+      repeatEmpty:P.repeat.length===0,
+      repeatCursor:P.repeat.length===0?'default':'pointer',
+      repeatDictBtnStyle:`background:${P.repeat.length===0?'rgba(246,239,228,.06)':'rgba(108,140,255,.16)'};border:1px solid ${P.repeat.length===0?'rgba(246,239,228,.12)':'rgba(108,140,255,.34)'};border-radius:19px;padding:15px;text-align:center;font-size:14.5px;font-weight:800;color:${P.repeat.length===0?'rgba(246,239,228,.35)':'#9FB4FF'};cursor:${P.repeat.length===0?'default':'pointer'}`,
+      streakLabel:P.streak?plural(P.streak,['день подряд','дня подряд','дней подряд']):'первый заход',
+      learnedCount:plural(P.total,WORD_FORMS), repeatCount:P.repeat.length,
+      dictCount:plural(P.total,WORD_FORMS), repeatWords:plural(P.repeat.length,WORD_FORMS),
+      repeatLabel:`${P.repeat.length} ${pform(P.repeat.length,['ждёт','ждут','ждут'])} повтора`,
+      wotdKo:wotd.ko, wotdRu:wotd.ru, wotdEx:wotd.exKo, wotdExRu:wotd.exRu,
+      wotdMeta:`${(TOPICS.find(x=>x.id===wotd.topic)||TOPICS[0]).ru} · новое через ${minsLeft} мин`,
+      homeStats:[
+        {value:String(P.total),label:`${pform(P.total,['слово','слова','слов'])} в словаре`,valStyle:`color:${LIME}`},
+        {value:String(P.repeat.length),label:pform(P.repeat.length,['ждёт повтора','ждут повтора','ждут повтора']),valStyle:`color:${BLUE}`},
+        {value:P.ok+P.miss?P.rate+'%':'—',label:'угадано с первого',valStyle:`color:${GOLD}`},
+      ],
+      goHome:this.go('home'), goTopics:this.go('topics'), goTeams:this.go('teams'),
+      goScore:this.go('score'), goSolo:this.startQuiz, goRepeat:this.startRepeat,
+      isSolo:scr==='solo', isSoloDone:scr==='soloDone',
+      isRepeat:scr==='repeat', isRepeatDone:scr==='repeatDone',
+      flipRepeat:this.flipRepeat, exitRepeat:this.exitRepeat,
+      repeatRemembered:()=>this.repeatAnswer(true), repeatForgot:()=>this.repeatAnswer(false),
+      repeatLeft:s.repeatQueue.length, repeatCleared:s.repeatCleared,
+      repeatFlipped:s.repeatFlipped,
+      repeatFront:repeatCur?(repeatCur.dir==='ko'?repeatCur.ko:repeatCur.ru):'',
+      repeatFrontStyle:repeatCur&&repeatCur.dir==='ko'
+        ? "font-family:'Noto Sans KR',sans-serif;font-weight:900;font-size:42px;line-height:1.1;letter-spacing:-.02em"
+        : 'font-family:Unbounded,sans-serif;font-weight:800;font-size:26px;line-height:1.2;letter-spacing:-.02em;text-wrap:balance',
+      repeatFrontRoman:repeatCur&&repeatCur.dir==='ko'?repeatCur.roman:'',
+      repeatBack:repeatCur?(repeatCur.dir==='ko'?repeatCur.ru:repeatCur.ko):'',
+      repeatExKo:repeatCur?repeatCur.exKo:'', repeatExRu:repeatCur?repeatCur.exRu:'',
+      repeatHintStyle:s.repeatFlipped?'display:none':'margin-top:6px;font-size:12px;font-weight:700;color:rgba(18,16,10,.35)',
+      repeatBtnRowStyle:s.repeatFlipped?'display:flex;gap:10px;padding:14px 0 calc(env(safe-area-inset-bottom) + 18px)':'display:none',
+      ...this.quizVals(accent),
+
+      levels: LEVELS.map(l=>({label:l.label, style:chip(s.level===l.id,accent), pick:()=>this.setState({level:l.id})})),
+      topicCards,
+      toggleAdult:()=>this.setState(st=>({adult:!st.adult})),
+      adultStyle:`display:flex;align-items:center;gap:12px;margin-top:10px;border-radius:19px;padding:15px;cursor:pointer;border:1px solid ${s.adult?'rgba(255,92,62,.5)':'rgba(255,92,62,.22)'};background:${s.adult?'rgba(255,92,62,.14)':'rgba(255,92,62,.06)'}`,
+      adultToggleStyle:`width:44px;height:26px;border-radius:100px;padding:3px;box-sizing:border-box;display:flex;flex:none;justify-content:${s.adult?'flex-end':'flex-start'};background:${s.adult?CORAL:'rgba(246,239,228,.16)'};transition:all .18s`,
+      nextTopicsLabel:`Дальше · ${plural(s.selected.length+(s.adult?1:0),['тема','темы','тем'])}`,
+      nextTopicsStyle:`background:${s.selected.length?accent:'rgba(246,239,228,.1)'};color:${s.selected.length?'#12100A':'rgba(246,239,228,.4)'};border-radius:20px;padding:17px;text-align:center;font-family:Unbounded,sans-serif;font-weight:800;font-size:16.5px;cursor:pointer`,
+
+      teamRows: s.teams.map((tm,i)=>({
+        ...tm, playersLabel:`${tm.players} игрока`,
+        badgeStyle:`background:${tm.color}`,
+        dirLabel:dirLabel(tm.dir),
+        dirStyle:`color:${tm.dir==='ru'?LIME:CORAL}`,
+        plus:()=>this.setState(st=>({teams:st.teams.map((x,j)=>j===i?{...x,players:x.players+1}:x)})),
+        minus:()=>this.setState(st=>({teams:st.teams.map((x,j)=>j===i?{...x,players:Math.max(2,x.players-1)}:x)})),
+        flip:()=>this.setState(st=>({teams:st.teams.map((x,j)=>j===i?{...x,dir:x.dir==='ru'?'ko':'ru'}:x)})),
+        canRemove:s.teams.length>2,
+        removeStyle:s.teams.length>2
+          ? 'width:30px;height:30px;border-radius:10px;background:rgba(255,92,62,.14);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;cursor:pointer;color:#FF5C3E;flex:none'
+          : 'display:none',
+        remove:()=>this.setState(st=>st.teams.length<=2?{}:{
+          teams:st.teams.filter((x,j)=>j!==i),
+          scores:st.scores.filter((x,j)=>j!==i),
+          activeTeam:Math.min(st.activeTeam,st.teams.length-2),
+        }),
+      })),
+      addTeam:()=>this.setState(st=>{
+        const it=pickIdols(1,st.teams.map(t2=>t2.idol))[0]||{name:`${st.teams.length+1}`,ko:'팀'};
+        return {teams:[...st.teams,{name:`Команда ${it.name}`,ko:it.ko,idol:it.name,color:TEAM_COLORS[st.teams.length%TEAM_COLORS.length],players:3,dir:st.teams.length%2?'ko':'ru'}],scores:[...st.scores,0]};
+      }),
+      shuffleNames:()=>this.setState(st=>{
+        const fresh=pickIdols(st.teams.length);
+        return {teams:st.teams.map((t2,i)=>fresh[i]?{...t2,name:`Команда ${fresh[i].name}`,ko:fresh[i].ko,idol:fresh[i].name}:t2)};
+      }),
+      durationOpts:[30,60,90].map(d=>({label:`${d} с`, style:`flex:1;border-radius:15px;padding:14px 0;text-align:center;font-family:Unbounded,sans-serif;font-weight:800;font-size:16px;cursor:pointer;${s.duration===d?`background:${accent};color:#12100A`:'background:rgba(246,239,228,.06);color:rgba(246,239,228,.55)'}`, pick:()=>this.setState({duration:d,timeLeft:d})})),
+      ruleOpts:RULES.map(r=>({...r,
+        style:`display:flex;align-items:center;gap:12px;border-radius:16px;padding:13px 15px;cursor:pointer;border:1px solid ${s.rule===r.id?'rgba(201,242,74,.4)':'rgba(246,239,228,.08)'};background:${s.rule===r.id?'rgba(201,242,74,.09)':'rgba(246,239,228,.04)'}`,
+        dotStyle:`width:20px;height:20px;border-radius:100px;flex:none;box-sizing:border-box;border:${s.rule===r.id?`6px solid ${accent}`:'2px solid rgba(246,239,228,.25)'}`,
+        pick:()=>this.setState({rule:r.id}),
+      })),
+      goal:s.goal,
+      goalOpts:[10,15,20,30].map(g=>({value:g,sub:'очков',pick:()=>this.setState({goal:g}),
+        style:`flex:1;border-radius:15px;padding:11px 0;text-align:center;cursor:pointer;${s.goal===g?`background:${accent};color:#12100A`:'background:rgba(246,239,228,.06);color:rgba(246,239,228,.55)'}`})),
+      startRound:()=>this.setState({screen:'game',timeLeft:s.duration,running:true,timeUp:false,results:[],cardIdx:0,revealed:false,deck:this.buildDeck(),scores:s.teams.map(()=>0),activeTeam:0,roundNo:1,winner:null}),
+
+      activeTeamName:t.name, activeTeamKo:t.ko, activeBadgeStyle:`background:${t.color}`,
+      activeDirLabel:dirLabel(t.dir), roundScore,
+      timerText:`00:${String(s.timeLeft).padStart(2,'0')}`,
+      timerTextStyle:s.timeLeft<=10
+        ? `color:${CORAL};font-size:19px;letter-spacing:.06em;text-shadow:0 0 22px rgba(255,92,62,.55)`
+        : 'color:rgba(246,239,228,.7)',
+      timerBarStyle:`height:100%;width:${Math.max(0,Math.min(100,(s.timeLeft/(s.duration||60))*100))}%;background:${s.timeLeft<=10?CORAL:accent};border-radius:100px;transition:width 1s linear`,
+      pauseGlyph:s.running?'❙❙':'▶',
+      togglePause:()=>{ if(this.state.timeUp) return; this.setState(st=>({running:!st.running})); },
+      isPaused:scr==='game'&&!s.running&&!s.timeUp,
+      pauseBtnStyle:`width:34px;height:34px;border-radius:11px;background:rgba(246,239,228,.09);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;cursor:pointer;color:rgba(246,239,228,.7);${s.timeUp?'visibility:hidden':''}`,
+      timeUp:s.timeUp,
+      resumeGame:()=>this.setState({running:true}),
+      endRound:()=>this.setState({running:false,screen:'roundEnd'}),
+      exitGame:()=>this.setState({running:false,timeUp:false,screen:'home',results:[],revealed:false}),
+      cardTopicKo:(TOPICS.find(x=>x.id===card.topic)||TOPICS[0]).ko,
+      cardTopicRu:(TOPICS.find(x=>x.id===card.topic)||TOPICS[0]).ru,
+      cardLevelDots:[1,2,3].map(i=>({style:`width:7px;height:7px;border-radius:100px;background:${i<=card.lvl?'#12100A':'rgba(18,16,10,.16)'}`})),
+      cardMain:t.dir==='ru'?card.ko:card.ru,
+      cardMainStyle:t.dir==='ru'
+        ? "font-family:'Noto Sans KR',sans-serif;font-weight:900;font-size:52px;line-height:1.05;letter-spacing:-.02em"
+        : 'font-family:Unbounded,sans-serif;font-weight:800;font-size:30px;line-height:1.15;letter-spacing:-.03em;text-wrap:balance',
+      cardRoman:card.roman,
+      cardSub:t.dir==='ru'?card.ru:card.ko,
+      cardSubStyle:t.dir==='ru'
+        ? 'font-size:19px;font-weight:700;color:rgba(18,16,10,.7);text-wrap:pretty'
+        : "font-family:'Noto Sans KR',sans-serif;font-size:30px;font-weight:900;color:rgba(18,16,10,.75)",
+      exampleCaption:s.revealed?'ПРИМЕР В ПРЕДЛОЖЕНИИ':'ТАПНИ КАРТОЧКУ — ПРИМЕР В ПРЕДЛОЖЕНИИ',
+      exKoParts:s.revealed?this.parts(card.exKo,card.hiKo):[],
+      exRuParts:s.revealed?this.parts(card.exRu,card.hiRu):[],
+      hiNoteStyle:s.revealed?'margin-top:8px;font-size:10.5px;font-weight:700;color:rgba(200,69,31,.75)':'display:none',
+      exampleStyle:`background:rgba(18,16,10,.05);border-radius:18px;padding:${s.revealed?'14px 15px':'12px 15px'};border:1px ${s.revealed?'solid':'dashed'} rgba(18,16,10,.12);text-align:${s.revealed?'left':'center'}`,
+      tapCard:()=>this.setState(st=>({revealed:!st.revealed})),
+      skipWord:()=>this.advance(false),
+      correctWord:()=>this.advance(true),
+
+      newWordsCount:s.results.length,
+      onStoriesScroll:this.onStoriesScroll,
+      hasStoryCards:storyCards.length>0,
+      storyCards,
+      storyDots:storyCards.map((_,i)=>({style:`width:6px;height:6px;border-radius:100px;background:${i===s.storyIdx?LIME:'rgba(246,239,228,.25)'}`})),
+      resultRows:s.results.map((r,i)=>({
+        ko:r.ko, ru:r.ru, roman:r.roman, topicRu:(TOPICS.find(x=>x.id===r.topic)||TOPICS[0]).ru,
+        mark:r.ok?'✓':'✕',
+        markStyle:`color:${r.ok?LIME:'rgba(255,92,62,.85)'}`,
+        style:`display:flex;align-items:center;gap:12px;border-radius:18px;padding:13px 15px;cursor:pointer;border:1px solid ${r.ok?'rgba(201,242,74,.28)':'rgba(255,92,62,.22)'};background:${r.ok?'rgba(201,242,74,.07)':'rgba(255,92,62,.05)'}`,
+        toggle:()=>{ this.record(r,!r.ok,r.ok); this.setState(st=>({results:st.results.map((x,j)=>j===i?{...x,ok:!x.ok}:x)})); },
+      })),
+      nextTeamLabel:s.winner!==null?'Новая игра':(scr==='score'?`Ход · ${s.teams[s.activeTeam%s.teams.length].name}`:`Ход · ${s.teams[(s.activeTeam+1)%s.teams.length].name}`),
+      nextTeam:()=>{
+        if(this.state.winner!==null){ this.setState({screen:'teams',winner:null}); return; }
+        if(this.state.screen==='score'&&this.state.results.length===0){ this.setState(st=>({screen:'game',timeLeft:st.duration,running:true,revealed:false})); return; }
+        this.setState(st=>{
+          const sc=[...st.scores]; sc[st.activeTeam]=(sc[st.activeTeam]||0)+st.results.filter(r=>r.ok).length;
+          const nx=(st.activeTeam+1)%st.teams.length;
+          const reached=sc.findIndex(v=>v>=st.goal);
+          const circleEnd=nx===0;
+          const win=(circleEnd&&reached>=0)?reached:null;
+          return {scores:sc,activeTeam:nx,results:[],revealed:false,winner:win,timeUp:false,
+            roundNo:circleEnd?st.roundNo+1:st.roundNo,
+            screen:circleEnd?'score':'game', timeLeft:st.duration, running:!circleEnd};
+        });
+      },
+
+      roundNo:s.roundNo, totalWordsPlayed:s.scores.reduce((a,b)=>a+b,0)+s.results.length,
+      scoreKicker:s.winner!==null?'우승 · победа':'중간 점수',
+      scoreTitle:s.winner!==null?`${s.teams[s.winner].name} выиграли`:'Табло',
+      scoreRows:s.teams.map((tm,i)=>({tm,i,score:(s.scores[i]||0)+(i===s.activeTeam?roundScore:0)}))
+        .sort((a,b)=>b.score-a.score)
+        .map((row,idx)=>({
+          place:idx+1, ko:row.tm.ko, name:row.tm.name, score:row.score,
+          detail:`${row.score} из ${s.goal} · ${dirLabel(row.tm.dir)}`,
+          badgeStyle:`background:${row.tm.color}`,
+          scoreStyle:`color:${idx===0?GOLD:'rgba(246,239,228,.5)'}`,
+          style:`display:flex;align-items:center;gap:12px;border-radius:19px;padding:14px 15px;border:1px solid ${idx===0?'rgba(255,194,74,.4)':'rgba(246,239,228,.08)'};background:${idx===0?'rgba(255,194,74,.09)':'rgba(246,239,228,.04)'}`,
+        })),
+      mvpWordKo:hardest?hardest.ko:wotd.ko, mvpWordRu:hardest?hardest.ru:wotd.ru,
+
+      dictFilters:[{id:'all',label:`Все · ${P.total}`},{id:'weak',label:`Слабые · ${P.repeat.length}`},{id:'new',label:'Новые'}].map(f=>({label:f.label,style:chip(s.dictFilter===f.id,accent),pick:()=>this.setState({dictFilter:f.id,expanded:null})})),
+      dictEmpty:dictList.length===0,
+      dictEmptyHint:P.total===0
+        ? 'Сыграйте раунд в компании или соло-квиз — каждое сыгранное слово попадёт сюда.'
+        : 'В этом фильтре пока нет слов.',
+      dictRows:dictList.map((w,i)=>({
+        ko:w.ko, ru:w.ru, exKo:w.exKo, exRu:w.exRu,
+        topicRu:(TOPICS.find(x=>x.id===w.topic)||TOPICS[0]).ru,
+        dots:[1,2,3].map(n=>({style:`width:6px;height:6px;border-radius:100px;background:${n<=mastery(w)?LIME:'rgba(246,239,228,.16)'}`})),
+        exStyle:s.expanded===w.ko?'margin-top:11px;padding-top:11px;border-top:1px solid rgba(246,239,228,.09)':'display:none',
+        expand:()=>this.setState(st=>({expanded:st.expanded===w.ko?null:w.ko})),
+      })),
+
+      statCards:[
+        {value:String(P.strong.length),label:`${pform(P.strong.length,['слово','слова','слов'])} уверенно`,valStyle:`color:${LIME}`},
+        {value:String(P.streak),label:pform(P.streak,['день подряд','дня подряд','дней подряд']),valStyle:`color:${CORAL}`},
+        {value:P.ok+P.miss?P.rate+'%':'—',label:'угадано с первого',valStyle:`color:${BLUE}`},
+      ],
+      progressEmpty:progressRows.length===0,
+      progressRows,
+
+      tabs:[{id:'home',ko:'게임',label:'Игра'},{id:'dict',ko:'단어장',label:'Словарь'},{id:'profile',ko:'프로필',label:'Профиль'}].map(tb=>({
+        ko:tb.ko,label:tb.label,
+        style:`flex:none;text-align:center;padding:7px 18px;border-radius:15px;cursor:pointer;${scr===tb.id?'background:rgba(246,239,228,.1);color:#F6EFE4':'color:rgba(246,239,228,.4)'}`,
+        pick:this.go(tb.id),
+      })),
+
+    };
+  }
+}
+
+</script>
+</body>
+</html>
